@@ -151,6 +151,36 @@
             z-index: 1000;
         }
         
+        /* Slider Container */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slider-wrapper {
+            display: flex;
+            width: 200%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .slider-wrapper.slide-2 {
+            transform: translateX(-50%);
+        }
+        
+        .slide {
+            width: 50%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
         /* Main Content */
         .content {
             position: relative;
@@ -160,6 +190,7 @@
             justify-content: center;
             align-items: center;
             padding: 2rem;
+            width: 100%;
         }
         
         .profile-section {
@@ -684,12 +715,339 @@
             animation: fadeIn 0.3s ease;
         }
         
+        /* Slider Navigation Buttons */
+        .slider-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .slider-nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .light-mode .slider-nav-btn {
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        .slider-nav-btn:hover {
+            transform: scale(1.1);
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .slider-nav-btn.active {
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .slide-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+        
+        .light-mode .slide-indicator {
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        /* Slide 2 Styles */
+        .slide-2-content {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .slide-2-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #4a6cf7;
+            text-align: center;
+        }
+        
+        .apps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+        
+        .app-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+        
+        .light-mode .app-btn {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        .app-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #121212;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .light-mode .app-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #121212;
+        }
+        
+        .app-icon {
+            font-size: 1.8rem;
+            width: 40px;
+            text-align: center;
+            color: #4a6cf7;
+        }
+        
+        .app-text {
+            flex-grow: 1;
+        }
+        
+        .app-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .app-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Music Player Section */
+        .music-section {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 2rem;
+        }
+        
+        .music-section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #4a6cf7;
+            text-align: center;
+        }
+        
+        .music-player-container {
+            background-color: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .light-mode .music-player-container {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .music-track {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .light-mode .music-track {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .music-track:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .track-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .track-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        
+        .track-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .track-artist {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .track-controls {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            background-color: #3a5ce5;
+        }
+        
+        .play-btn.playing {
+            background-color: #ff4757;
+        }
+        
+        .play-btn.playing:hover {
+            background-color: #ff3742;
+        }
+        
+        .play-btn.disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        
+        .play-btn.disabled:hover {
+            transform: none;
+            background-color: #666;
+        }
+        
+        .request-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .request-btn {
+            padding: 1rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .light-mode .request-btn {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        .request-btn:hover {
+            background-color: #4a6cf7;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Gallery Request Modal */
+        .gallery-request-content {
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .empty-gallery-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            max-width: 500px;
+        }
+        
+        .light-mode .empty-gallery-message {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -776,6 +1134,57 @@
                 width: 80px;
                 height: 80px;
             }
+            
+            .slider-nav {
+                bottom: 15px;
+            }
+            
+            .slider-nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .slide-indicator {
+                top: 15px;
+                right: 15px;
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+            
+            .slide-2-title {
+                font-size: 2rem;
+            }
+            
+            .apps-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .app-btn {
+                padding: 1.2rem;
+            }
+            
+            .app-icon {
+                font-size: 1.5rem;
+            }
+            
+            .music-section-title {
+                font-size: 1.5rem;
+            }
+            
+            .music-track {
+                padding: 0.8rem;
+            }
+            
+            .track-image {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .play-btn {
+                width: 35px;
+                height: 35px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -861,6 +1270,57 @@
             .podium-4 {
                 height: 55px;
             }
+            
+            .slider-nav {
+                gap: 5px;
+            }
+            
+            .slider-nav-btn {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .slide-2-title {
+                font-size: 1.8rem;
+            }
+            
+            .app-btn {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+                padding: 1rem;
+            }
+            
+            .app-icon {
+                margin-bottom: 0.5rem;
+            }
+            
+            .music-track {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+            }
+            
+            .track-image {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .track-info {
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+            
+            .request-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .request-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -892,111 +1352,242 @@
     <!-- Music Status -->
     <div class="music-status" id="music-status">Musik dimatikan</div>
     
-    <!-- Main Content -->
-    <main class="content">
-        <section class="profile-section">
-            <img src="profil.jpg" alt="Al'Majid" class="profile-pic" id="profile-img">
-            <h1 class="welcome-text">Oi lek, selamat datang di website ku</h1>
-            <h1 class="name">Al'Majid</h1>
-            
-            <!-- Roles Container -->
-            <div class="roles-container">
-                <span class="role-tag">UI/UX Designer</span>
-                <span class="role-tag">Website Programming</span>
-                <span class="role-tag">Frontend Developer</span>
-                <span class="role-tag">Backend Developer</span>
-            </div>
-        </section>
-        
-        <div class="buttons-container">
-            <a href="https://oradevstore.vercel.app/" class="btn" target="_blank">
-                <i class="fas fa-globe"></i>
-                <span class="btn-text">Website</span>
-            </a>
-            
-            <a href="https://instagram.com/al_majid.16" class="btn" target="_blank">
-                <i class="fab fa-instagram"></i>
-                <span class="btn-text">Instagram</span>
-            </a>
-            
-            <a href="https://wa.me/6283853185739" class="btn" target="_blank">
-                <i class="fab fa-whatsapp"></i>
-                <span class="btn-text">WhatsApp</span>
-            </a>
-            
-            <a href="https://tiktok.com/@orasampurna" class="btn" target="_blank">
-                <i class="fab fa-tiktok"></i>
-                <span class="btn-text">TikTok</span>
-            </a>
-            
-            <!-- Tombol Spotify di atas Facebook -->
-            <button class="btn" id="spotify-btn">
-                <i class="fab fa-spotify"></i>
-                <span class="btn-text">Spotify</span>
-            </button>
-            
-            <a href="https://www.facebook.com/people/Al-Majid/pfbid0c4jZfvNrfDTSTvwAPAW4gAsyyrcG85FtF7w14ZZT5PysjmLuysN999Qpd4TGvb3gl/?rdid=82jQFmQ9nd1VQ1tE&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1BfqpgUUF9%2F" class="btn" target="_blank">
-                <i class="fab fa-facebook"></i>
-                <span class="btn-text">Facebook</span>
-            </a>
-            
-            <a href="mailto:almajidnafi@gmail.com" class="btn">
-                <i class="fas fa-envelope"></i>
-                <span class="btn-text">Email</span>
-            </a>
-            
-            <!-- New Buttons -->
-            <button class="btn" id="programming-btn">
-                <i class="fas fa-code"></i>
-                <span class="btn-text">Programming Language</span>
-            </button>
-            
-            <button class="btn" id="favorite-person-btn">
-                <i class="fas fa-heart"></i>
-                <span class="btn-text">My Favorite Person</span>
-            </button>
-            
-            <button class="btn" id="myself-btn">
-                <i class="fas fa-user"></i>
-                <span class="btn-text">My Self</span>
-            </button>
-            
-            <button class="btn" id="friend-btn">
-                <i class="fas fa-user-friends"></i>
-                <span class="btn-text">My Friend</span>
-            </button>
-            
-            <button class="btn" id="randomize-btn">
-                <i class="fas fa-dice"></i>
-                <span class="btn-text">Randomize</span>
-            </button>
-            
-            <button class="btn" id="longing-btn">
-                <i class="fas fa-heartbeat"></i>
-                <span class="btn-text">My Longing</span>
-            </button>
-            
-            <button class="btn" id="favorite-musician-btn">
-                <i class="fas fa-guitar"></i>
-                <span class="btn-text">Favorite Musician</span>
-            </button>
-            
-            <button class="btn" id="family-btn">
-                <i class="fas fa-home"></i>
-                <span class="btn-text">Family</span>
-            </button>
-            
-            <button class="btn" id="gallery-btn">
-                <i class="fas fa-images"></i>
-                <span class="btn-text">Gallery</span>
-            </button>
-        </div>
-        
-        <div class="footer">
-            <p>&copy; 2025 Al'Majid. All rights reserved.</p>
-        </div>
-    </main>
+    <!-- Slide Indicator -->
+    <div class="slide-indicator" id="slide-indicator">Slide 1/2</div>
     
+    <!-- Slider Navigation -->
+    <div class="slider-nav">
+        <button class="slider-nav-btn active" id="slide-1-btn">
+            <i class="fas fa-user"></i>
+        </button>
+        <button class="slider-nav-btn" id="slide-2-btn">
+            <i class="fas fa-th-large"></i>
+        </button>
+    </div>
+    
+    <!-- Slider Container -->
+    <div class="slider-container">
+        <div class="slider-wrapper" id="slider-wrapper">
+            <!-- Slide 1: Original Content -->
+            <div class="slide" id="slide-1">
+                <main class="content">
+                    <section class="profile-section">
+                        <img src="profil.jpg" alt="Al'Majid" class="profile-pic" id="profile-img">
+                        <h1 class="welcome-text">Oi lek, selamat datang di website ku</h1>
+                        <h1 class="name">Al'Majid</h1>
+                        
+                        <!-- Bio dengan Vibecoding -->
+                        <p class="bio">
+                            <i class="fas fa-code bio-icon"></i>
+                            Website Programming | UI/UX Designer | Vibecoding
+                        </p>
+                        
+                        <!-- Roles Container -->
+                        <div class="roles-container">
+                            <span class="role-tag">UI/UX Designer</span>
+                            <span class="role-tag">Website Programming</span>
+                            <span class="role-tag">Frontend Developer</span>
+                            <span class="role-tag">Backend Developer</span>
+                            <span class="role-tag">Vibecoding</span>
+                        </div>
+                    </section>
+                    
+                    <div class="buttons-container">
+                        <a href="https://oradevstore.vercel.app/" class="btn" target="_blank">
+                            <i class="fas fa-globe"></i>
+                            <span class="btn-text">Website</span>
+                        </a>
+                        
+                        <a href="https://instagram.com/al_majid.16" class="btn" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                            <span class="btn-text">Instagram</span>
+                        </a>
+                        
+                        <a href="https://wa.me/6283853185739" class="btn" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                            <span class="btn-text">WhatsApp</span>
+                        </a>
+                        
+                        <a href="https://tiktok.com/@orasampurna" class="btn" target="_blank">
+                            <i class="fab fa-tiktok"></i>
+                            <span class="btn-text">TikTok</span>
+                        </a>
+                        
+                        <!-- Tombol Spotify di atas Facebook -->
+                        <button class="btn" id="spotify-btn">
+                            <i class="fab fa-spotify"></i>
+                            <span class="btn-text">Spotify</span>
+                        </button>
+                        
+                        <a href="https://facebook.com/almajid.nafi" class="btn" target="_blank">
+                            <i class="fab fa-facebook"></i>
+                            <span class="btn-text">Facebook</span>
+                        </a>
+                        
+                        <a href="mailto:almajidnafi@gmail.com" class="btn">
+                            <i class="fas fa-envelope"></i>
+                                <span class="btn-text">Email</span>
+                        </a>
+                        
+                        <!-- New Buttons -->
+                        <button class="btn" id="programming-btn">
+                            <i class="fas fa-code"></i>
+                            <span class="btn-text">Programming Language</span>
+                        </button>
+                        
+                        <button class="btn" id="favorite-person-btn">
+                            <i class="fas fa-heart"></i>
+                            <span class="btn-text">My Favorite Person</span>
+                        </button>
+                        
+                        <button class="btn" id="myself-btn">
+                            <i class="fas fa-user"></i>
+                            <span class="btn-text">My Self</span>
+                        </button>
+                        
+                        <button class="btn" id="friend-btn">
+                            <i class="fas fa-user-friends"></i>
+                            <span class="btn-text">My Friend</span>
+                        </button>
+                        
+                        <button class="btn" id="randomize-btn">
+                            <i class="fas fa-dice"></i>
+                            <span class="btn-text">Randomize</span>
+                        </button>
+                        
+                        <button class="btn" id="longing-btn">
+                            <i class="fas fa-heartbeat"></i>
+                            <span class="btn-text">My Longing</span>
+                        </button>
+                        
+                        <button class="btn" id="favorite-musician-btn">
+                            <i class="fas fa-guitar"></i>
+                            <span class="btn-text">Favorite Musician</span>
+                        </button>
+                        
+                        <button class="btn" id="family-btn">
+                            <i class="fas fa-home"></i>
+                            <span class="btn-text">Family</span>
+                        </button>
+                        
+                        <button class="btn" id="gallery-btn">
+                            <i class="fas fa-images"></i>
+                            <span class="btn-text">Gallery</span>
+                        </button>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>&copy; 2025 Al'Majid. All rights reserved.</p>
+                    </div>
+                </main>
+            </div>
+            
+            <!-- Slide 2: New Features -->
+            <div class="slide" id="slide-2">
+                <main class="content">
+                    <section class="profile-section">
+                        <h1 class="slide-2-title">Tools & Features</h1>
+                        <p class="bio">Akses aplikasi dan fitur menarik lainnya</p>
+                    </section>
+                    
+                    <div class="slide-2-content">
+                        <!-- Apps Container -->
+                        <div class="apps-container">
+                            <!-- 3 Tombol Utama -->
+                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                                <div class="app-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="app-text">
+                                    <div class="app-title">Kalkulator</div>
+                                    <div class="app-desc">Kalkulator online dengan fitur lengkap</div>
+                                </div>
+                            </a>
+                            
+                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                                <div class="app-icon">
+                                    <i class="fas fa-sticky-note"></i>
+                                </div>
+                                <div class="app-text">
+                                    <div class="app-title">Notepad</div>
+                                    <div class="app-desc">Catatan online dengan penyimpanan cloud</div>
+                                </div>
+                            </a>
+                            
+                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                                <div class="app-icon">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <div class="app-text">
+                                    <div class="app-title">Photobooth</div>
+                                    <div class="app-desc">Ambil foto dengan efek dan filter menarik</div>
+                                </div>
+                            </a>
+                            
+                            <!-- 3 Tombol Coming Soon -->
+                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                                <div class="app-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="app-text">
+                                    <div class="app-title">Coming Soon</div>
+                                    <div class="app-desc">Fitur menarik sedang dalam pengembangan</div>
+                                </div>
+                            </a>
+                            
+                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                                <div class="app-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="app-text">
+                                    <div class="app-title">Coming Soon</div>
+                                    <div class="app-desc">Fitur menarik sedang dalam pengembangan</div>
+                                </div>
+                            </a>
+                            
+                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                                <div class="app-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="app-text">
+                                    <div class="app-title">Coming Soon</div>
+                                    <div class="app-desc">Fitur menarik sedang dalam pengembangan</div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <!-- Music Player Section -->
+                        <div class="music-section">
+                            <h2 class="music-section-title">Music For You</h2>
+                            
+                            <div class="music-player-container" id="music-player-container">
+                                <!-- Music tracks akan ditambahkan secara dinamis -->
+                            </div>
+                            
+                            <!-- Request Buttons -->
+                            <div class="request-buttons">
+                                <button class="request-btn" id="request-music-btn">
+                                    <i class="fab fa-whatsapp"></i>
+                                    <span>Minta Tambahin Musikmu</span>
+                                </button>
+                                
+                                <button class="request-btn" id="request-picture-btn">
+                                    <i class="fas fa-images"></i>
+                                    <span>Request Picture</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>&copy; 2025 Al'Majid. All rights reserved. | Slide 2: Tools & Features</p>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modals (existing modals remain the same) -->
     <!-- Fav Song Modal -->
     <div class="modal" id="favsong-modal">
         <div class="modal-content">
@@ -1148,6 +1739,29 @@
         </div>
     </div>
     
+    <!-- Gallery Request Modal -->
+    <div class="modal" id="gallery-request-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Gallery Request</h2>
+                <button class="close-modal" id="close-gallery-request">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="gallery-request-content">
+                <div class="empty-gallery-message" id="gallery-request-message">
+                    <!-- Konten akan ditampilkan berdasarkan apakah ada gambar atau tidak -->
+                </div>
+                
+                <div class="gallery-nav" id="gallery-request-nav">
+                    <!-- Thumbnails will be added dynamically if images exist -->
+                </div>
+                
+                <button class="close-gallery-btn" id="close-gallery-request-btn">Tutup</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Background Music -->
     <audio id="background-music" loop>
         <source src="musik.mp3" type="audio/mpeg">
@@ -1190,12 +1804,192 @@
         const galleryNav = document.getElementById('gallery-nav');
         const backgroundMusic = document.getElementById('background-music');
         
+        // New DOM Elements for Slide 2
+        const sliderWrapper = document.getElementById('slider-wrapper');
+        const slide1Btn = document.getElementById('slide-1-btn');
+        const slide2Btn = document.getElementById('slide-2-btn');
+        const slideIndicator = document.getElementById('slide-indicator');
+        const musicPlayerContainer = document.getElementById('music-player-container');
+        const requestMusicBtn = document.getElementById('request-music-btn');
+        const requestPictureBtn = document.getElementById('request-picture-btn');
+        const galleryRequestModal = document.getElementById('gallery-request-modal');
+        const closeGalleryRequestBtn = document.getElementById('close-gallery-request');
+        const closeGalleryRequestBtn2 = document.getElementById('close-gallery-request-btn');
+        const galleryRequestMessage = document.getElementById('gallery-request-message');
+        const galleryRequestNav = document.getElementById('gallery-request-nav');
+        
         // State variables
         let isDarkMode = true;
         let isMusicPlaying = false;
         let loadingProgress = 0;
         let musicFileExists = true;
         let currentGalleryType = 'gallery';
+        let currentSlide = 1;
+        let currentPlayingTrack = null;
+        
+        // Music tracks data - DETECT MANUALLY ONE BY ONE
+        const musicTracks = [
+            {
+                id: 1,
+                image: 'fotolagu1.jpg',
+                audio: 'musiklagu1.mp3',
+                artist: 'Conan Gray',
+                title: 'Heather',
+                isAvailable: false
+            },
+            {
+                id: 2,
+                image: 'fotolagu2.jpg',
+                audio: 'musiklagu2.mp3',
+                artist: 'Neck Deep',
+                title: 'December',
+                isAvailable: false
+            },
+            {
+                id: 3,
+                image: 'fotolagu3.jpg',
+                audio: 'musiklagu3.mp3',
+                artist: 'Daniel Caesar',
+                title: 'Innocence',
+                isAvailable: false
+            },
+            {
+                id: 4,
+                image: 'fotolagu4.jpg',
+                audio: 'musiklagu4.mp3',
+                artist: 'Television Blonde',
+                title: 'Freaks',
+                isAvailable: false
+            },
+            {
+                id: 5,
+                image: 'fotolagu5.jpg',
+                audio: 'musiklagu5.mp3',
+                artist: 'Nama_Artis5',
+                title: 'Judul_Lagu5',
+                isAvailable: false
+            },
+            {
+                id: 6,
+                image: 'fotolagu6.jpg',
+                audio: 'musiklagu6.mp3',
+                artist: 'Nama_Artis6',
+                title: 'Judul_Lagu6',
+                isAvailable: false
+            },
+            {
+                id: 7,
+                image: 'fotolagu7.jpg',
+                audio: 'musiklagu7.mp3',
+                artist: 'Nama_Artis7',
+                title: 'Judul_Lagu7',
+                isAvailable: false
+            },
+            {
+                id: 8,
+                image: 'fotolagu8.jpg',
+                audio: 'musiklagu8.mp3',
+                artist: 'Nama_Artis8',
+                title: 'Judul_Lagu8',
+                isAvailable: false
+            },
+            {
+                id: 9,
+                image: 'fotolagu9.jpg',
+                audio: 'musiklagu9.mp3',
+                artist: 'Nama_Artis9',
+                title: 'Judul_Lagu9',
+                isAvailable: false
+            },
+            {
+                id: 10,
+                image: 'fotolagu10.jpg',
+                audio: 'musiklagu10.mp3',
+                artist: 'Nama_Artis10',
+                title: 'Judul_Lagu10',
+                isAvailable: false
+            },
+            {
+                id: 11,
+                image: 'fotolagu11.jpg',
+                audio: 'musiklagu11.mp3',
+                artist: 'Nama_Artis11',
+                title: 'Judul_Lagu11',
+                isAvailable: false
+            },
+            {
+                id: 12,
+                image: 'fotolagu12.jpg',
+                audio: 'musiklagu12.mp3',
+                artist: 'Nama_Artis12',
+                title: 'Judul_Lagu12',
+                isAvailable: false
+            },
+            {
+                id: 13,
+                image: 'fotolagu13.jpg',
+                audio: 'musiklagu13.mp3',
+                artist: 'Nama_Artis13',
+                title: 'Judul_Lagu13',
+                isAvailable: false
+            },
+            {
+                id: 14,
+                image: 'fotolagu14.jpg',
+                audio: 'musiklagu14.mp3',
+                artist: 'Nama_Artis14',
+                title: 'Judul_Lagu14',
+                isAvailable: false
+            },
+            {
+                id: 15,
+                image: 'fotolagu15.jpg',
+                audio: 'musiklagu15.mp3',
+                artist: 'Nama_Artis15',
+                title: 'Judul_Lagu15',
+                isAvailable: false
+            },
+            {
+                id: 16,
+                image: 'fotolagu16.jpg',
+                audio: 'musiklagu16.mp3',
+                artist: 'Nama_Artis16',
+                title: 'Judul_Lagu16',
+                isAvailable: false
+            },
+            {
+                id: 17,
+                image: 'fotolagu17.jpg',
+                audio: 'musiklagu17.mp3',
+                artist: 'Nama_Artis17',
+                title: 'Judul_Lagu17',
+                isAvailable: false
+            },
+            {
+                id: 18,
+                image: 'fotolagu18.jpg',
+                audio: 'musiklagu18.mp3',
+                artist: 'Nama_Artis18',
+                title: 'Judul_Lagu18',
+                isAvailable: false
+            },
+            {
+                id: 19,
+                image: 'fotolagu19.jpg',
+                audio: 'musiklagu19.mp3',
+                artist: 'Nama_Artis19',
+                title: 'Judul_Lagu19',
+                isAvailable: false
+            },
+            {
+                id: 20,
+                image: 'fotolagu20.jpg',
+                audio: 'musiklagu20.mp3',
+                artist: 'Nama_Artis20',
+                title: 'Judul_Lagu20',
+                isAvailable: false
+            }
+        ];
         
         // Loading Animation dengan persentase 0-100%
         function simulateLoading() {
@@ -1214,6 +2008,9 @@
                     setTimeout(() => {
                         loadingScreen.style.opacity = '0';
                         loadingScreen.style.visibility = 'hidden';
+                        
+                        // Initialize music tracks after loading
+                        initMusicTracks();
                     }, 500);
                 } else {
                     // Update persentase dan progress bar
@@ -1251,6 +2048,128 @@
             checkMusicFile();
         });
         
+        // Initialize music tracks
+        function initMusicTracks() {
+            musicPlayerContainer.innerHTML = '';
+            
+            if (musicTracks.length === 0) {
+                const noTracksElement = document.createElement('div');
+                noTracksElement.className = 'empty-gallery-message';
+                noTracksElement.textContent = 'Belum ada lagu yang tersedia. Gunakan tombol "Minta Tambahin Musikmu" untuk request lagu.';
+                musicPlayerContainer.appendChild(noTracksElement);
+                return;
+            }
+            
+            // Check each track for availability
+            musicTracks.forEach(track => {
+                checkFileExists(track.audio, (audioExists) => {
+                    checkFileExists(track.image, (imageExists) => {
+                        track.isAvailable = audioExists;
+                        
+                        const trackElement = document.createElement('div');
+                        trackElement.className = 'music-track';
+                        trackElement.dataset.trackId = track.id;
+                        
+                        const imageUrl = imageExists ? track.image : `https://ui-avatars.com/api/?name=${encodeURIComponent(track.artist)}&background=4a6cf7&color=fff&size=100&bold=true`;
+                        const artistName = track.artist === 'Nama_Artis' + track.id ? 'Coming Soon' : track.artist;
+                        const songTitle = track.title === 'Judul_Lagu' + track.id ? 'Coming Soon' : track.title;
+                        
+                        trackElement.innerHTML = `
+                            <img src="${imageUrl}" class="track-image" alt="${songTitle}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(track.artist)}&background=4a6cf7&color=fff&size=100&bold=true'">
+                            <div class="track-info">
+                                <div class="track-title">${songTitle}</div>
+                                <div class="track-artist">${artistName}</div>
+                            </div>
+                            <div class="track-controls">
+                                <button class="play-btn ${track.isAvailable ? '' : 'disabled'}" ${track.isAvailable ? '' : 'disabled'}>
+                                    <i class="fas ${track.isAvailable ? 'fa-play' : 'fa-clock'}"></i>
+                                </button>
+                            </div>
+                        `;
+                        
+                        if (!track.isAvailable) {
+                            trackElement.querySelector('.play-btn').title = 'Lagu belum tersedia';
+                        }
+                        
+                        musicPlayerContainer.appendChild(trackElement);
+                        
+                        // Add event listener to play button
+                        const playBtn = trackElement.querySelector('.play-btn');
+                        if (playBtn && track.isAvailable) {
+                            playBtn.addEventListener('click', function() {
+                                const trackId = parseInt(trackElement.dataset.trackId);
+                                const track = musicTracks.find(t => t.id === trackId);
+                                
+                                if (!track || !track.isAvailable) return;
+                                
+                                playTrack(trackId, this);
+                            });
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Check if a file exists
+        function checkFileExists(url, callback) {
+            fetch(url, { method: 'HEAD' })
+                .then(response => {
+                    callback(response.ok);
+                })
+                .catch(() => {
+                    callback(false);
+                });
+        }
+        
+        // Play a specific track
+        function playTrack(trackId, playButton) {
+            const track = musicTracks.find(t => t.id === trackId);
+            
+            if (!track || !track.isAvailable) return;
+            
+            // Stop currently playing track if any
+            if (currentPlayingTrack && currentPlayingTrack !== trackId) {
+                const currentAudio = document.getElementById(`audio-${currentPlayingTrack}`);
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+                
+                // Reset previous play button
+                const prevPlayButton = document.querySelector(`.music-track[data-track-id="${currentPlayingTrack}"] .play-btn`);
+                if (prevPlayButton) {
+                    prevPlayButton.classList.remove('playing');
+                    prevPlayButton.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            }
+            
+            // Create or get audio element
+            let audioElement = document.getElementById(`audio-${trackId}`);
+            if (!audioElement) {
+                audioElement = new Audio(track.audio);
+                audioElement.id = `audio-${trackId}`;
+                audioElement.volume = 0.7;
+                
+                audioElement.addEventListener('ended', () => {
+                    playButton.classList.remove('playing');
+                    playButton.innerHTML = '<i class="fas fa-play"></i>';
+                    currentPlayingTrack = null;
+                });
+            }
+            
+            if (audioElement.paused) {
+                audioElement.play();
+                playButton.classList.add('playing');
+                playButton.innerHTML = '<i class="fas fa-pause"></i>';
+                currentPlayingTrack = trackId;
+            } else {
+                audioElement.pause();
+                playButton.classList.remove('playing');
+                playButton.innerHTML = '<i class="fas fa-play"></i>';
+                currentPlayingTrack = null;
+            }
+        }
+        
         // Theme Toggle
         themeToggle.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
@@ -1267,7 +2186,7 @@
             }
         });
         
-        // Cek ketersediaan file musik
+        // Cek ketersediaan file musik background
         function checkMusicFile() {
             fetch('musik.mp3')
                 .then(response => {
@@ -1335,6 +2254,100 @@
             musicControl.style.display = 'none';
         });
         
+        // Slide Navigation
+        function goToSlide(slideNumber) {
+            currentSlide = slideNumber;
+            
+            if (slideNumber === 1) {
+                sliderWrapper.classList.remove('slide-2');
+                slide1Btn.classList.add('active');
+                slide2Btn.classList.remove('active');
+                slideIndicator.textContent = 'Slide 1/2';
+            } else {
+                sliderWrapper.classList.add('slide-2');
+                slide1Btn.classList.remove('active');
+                slide2Btn.classList.add('active');
+                slideIndicator.textContent = 'Slide 2/2';
+            }
+        }
+        
+        slide1Btn.addEventListener('click', () => goToSlide(1));
+        slide2Btn.addEventListener('click', () => goToSlide(2));
+        
+        // Request Music Button
+        requestMusicBtn.addEventListener('click', () => {
+            const message = encodeURIComponent(`https://almajid.vercel.app/\nbang, request lagu "judul"`);
+            window.open(`https://wa.me/6283853185739?text=${message}`, '_blank');
+        });
+        
+        // Request Picture Button - Shows gallery request modal
+        requestPictureBtn.addEventListener('click', () => {
+            openGalleryRequestModal();
+        });
+        
+        // Gallery Request Modal
+        function openGalleryRequestModal() {
+            // Check if there are any gallery images
+            const galleryImages = getGalleryImages('gallery');
+            
+            if (galleryImages.length === 0) {
+                galleryRequestMessage.innerHTML = `
+                    <h3>Gallery Kosong</h3>
+                    <p>Belum ada foto di gallery. Gunakan tombol di bawah untuk request tambahan foto.</p>
+                    <button class="request-btn" id="request-picture-wa-btn" style="margin-top: 1.5rem;">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Request Picture via WhatsApp</span>
+                    </button>
+                `;
+                
+                galleryRequestNav.innerHTML = '';
+            } else {
+                galleryRequestMessage.innerHTML = `
+                    <h3>Gallery Tersedia</h3>
+                    <p>Ada ${galleryImages.length} foto di gallery. Scroll untuk melihat.</p>
+                `;
+                
+                // Show thumbnails
+                galleryRequestNav.innerHTML = '';
+                galleryImages.forEach((imageSrc, index) => {
+                    const thumbnail = document.createElement('img');
+                    thumbnail.className = 'gallery-thumbnail';
+                    thumbnail.alt = `Gambar ${index + 1}`;
+                    thumbnail.src = imageSrc;
+                    
+                    thumbnail.onerror = function() {
+                        this.style.display = 'none';
+                    };
+                    
+                    galleryRequestNav.appendChild(thumbnail);
+                });
+                
+                // Add request button below thumbnails
+                const requestBtnContainer = document.createElement('div');
+                requestBtnContainer.style.marginTop = '1.5rem';
+                requestBtnContainer.innerHTML = `
+                    <button class="request-btn" id="request-picture-wa-btn">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Request Picture via WhatsApp</span>
+                    </button>
+                `;
+                galleryRequestNav.appendChild(requestBtnContainer);
+            }
+            
+            openModal(galleryRequestModal);
+            
+            // Add event listener to WhatsApp request button
+            setTimeout(() => {
+                const requestPictureWaBtn = document.getElementById('request-picture-wa-btn');
+                if (requestPictureWaBtn) {
+                    requestPictureWaBtn.addEventListener('click', () => {
+                        const message = encodeURIComponent(`https://almajid.vercel.app/\n"Bang, tambahin foto ini"`);
+                        window.open(`https://wa.me/6283853185739?text=${message}`, '_blank');
+                    });
+                }
+            }, 100);
+        }
+        
         // Modal Management Functions
         function openModal(modal) {
             modal.style.display = 'flex';
@@ -1344,6 +2357,22 @@
                 musicControl.classList.remove('playing');
                 musicControl.innerHTML = '<i class="fas fa-music"></i>';
                 isMusicPlaying = false;
+            }
+            
+            // Pause any playing track
+            if (currentPlayingTrack) {
+                const audioElement = document.getElementById(`audio-${currentPlayingTrack}`);
+                if (audioElement) {
+                    audioElement.pause();
+                    
+                    // Reset play button
+                    const playButton = document.querySelector(`.music-track[data-track-id="${currentPlayingTrack}"] .play-btn`);
+                    if (playButton) {
+                        playButton.classList.remove('playing');
+                        playButton.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                }
+                currentPlayingTrack = null;
             }
         }
         
@@ -1393,7 +2422,7 @@
             openModal(favoritePersonModal);
         });
         
-        // Gallery Management Functions - SEDERHANA LANGSUNG MENAMPILKAN FOTO YANG PASTI ADA
+        // Gallery Management Functions
         function getGalleryImages(type) {
             // Daftar foto yang PASTI ADA sesuai info Anda
             const galleries = {
@@ -1555,8 +2584,10 @@
         setupModalClose(favoritePersonModal, closeFavoritePersonBtn);
         setupModalClose(favoriteMusicianModal, closeFavoriteMusicianBtn);
         setupModalClose(galleryModal, closeGalleryBtn);
+        setupModalClose(galleryRequestModal, closeGalleryRequestBtn);
         
         closeGalleryBtn2.addEventListener('click', () => closeModal(galleryModal));
+        closeGalleryRequestBtn2.addEventListener('click', () => closeModal(galleryRequestModal));
         
         // Add hover effect to all buttons
         document.querySelectorAll('.btn').forEach(button => {
@@ -1590,6 +2621,17 @@
             item.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0)';
                 this.style.backgroundColor = '';
+            });
+        });
+        
+        // Add hover effect to app buttons
+        document.querySelectorAll('.app-btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
             });
         });
     </script>
