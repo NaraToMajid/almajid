@@ -253,7 +253,7 @@
             transform: translateY(-2px);
         }
         
-        /* Buttons Container - Vertikal */
+        /* Buttons Container */
         .buttons-container {
             display: flex;
             flex-direction: column;
@@ -363,8 +363,8 @@
             color: white;
         }
         
-        /* Fav Song Modal */
-        .favsong-modal {
+        /* New Modals */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -377,45 +377,44 @@
             z-index: 2000;
         }
         
-        .light-mode .favsong-modal {
+        .light-mode .modal {
             background-color: rgba(0, 0, 0, 0.95);
         }
         
-        .favsong-content {
+        .modal-content {
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 2rem;
-            max-width: 700px;
-            width: 90%;
+            max-width: 90%;
             max-height: 90%;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .light-mode .favsong-content {
+        .light-mode .modal-content {
             background-color: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
         
-        .favsong-header {
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
         
-        .favsong-title {
+        .modal-title {
             font-size: 1.8rem;
             font-weight: 700;
             color: #4a6cf7;
         }
         
-        .light-mode .favsong-title {
+        .light-mode .modal-title {
             color: #4a6cf7;
         }
         
-        .close-favsong {
+        .close-modal {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
             border: none;
@@ -430,34 +429,73 @@
             justify-content: center;
         }
         
-        .close-favsong:hover {
+        .close-modal:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
         
-        .spotify-iframe-container {
+        /* Programming Languages Modal */
+        .languages-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .language-category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .language-header {
             display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        
-        /* Gallery Modal */
-        .gallery-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            display: none;
-            justify-content: center;
             align-items: center;
-            z-index: 2000;
+            gap: 10px;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
         
-        .light-mode .gallery-modal {
-            background-color: rgba(0, 0, 0, 0.95);
+        .light-mode .language-header {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
         }
         
+        .language-icon {
+            font-size: 1.5rem;
+            color: #4a6cf7;
+        }
+        
+        .language-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .light-mode .language-title {
+            color: #121212;
+        }
+        
+        .language-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        
+        .language-item {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .light-mode .language-item {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        /* Gallery Styles */
         .gallery-content {
             max-width: 90%;
             max-height: 90%;
@@ -476,8 +514,10 @@
         
         .gallery-nav {
             display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 1.5rem;
+            justify-content: center;
         }
         
         .gallery-thumbnail {
@@ -494,7 +534,7 @@
             opacity: 1;
         }
         
-        .close-gallery {
+        .close-gallery-btn {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
             border: none;
@@ -505,8 +545,101 @@
             transition: background-color 0.3s ease;
         }
         
-        .close-gallery:hover {
+        .close-gallery-btn:hover {
             background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Favorite Person Modal */
+        .favorite-person-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+            object-fit: contain;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Favorite Musician Podium */
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .podium {
+            width: 120px;
+            height: 80px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .podium-1 {
+            background-color: #FFD700;
+            height: 100px;
+            color: #000;
+        }
+        
+        .podium-2 {
+            background-color: #C0C0C0;
+            height: 85px;
+            color: #000;
+        }
+        
+        .podium-3 {
+            background-color: #CD7F32;
+            height: 70px;
+            color: #000;
+        }
+        
+        .podium-4 {
+            background-color: #333;
+            height: 55px;
+            color: #fff;
+        }
+        
+        .podium-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .podium-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 3px solid;
+        }
+        
+        .podium-1 .podium-image {
+            border-color: #FFD700;
+        }
+        
+        .podium-2 .podium-image {
+            border-color: #C0C0C0;
+        }
+        
+        .podium-3 .podium-image {
+            border-color: #CD7F32;
+        }
+        
+        .podium-4 .podium-image {
+            border-color: #333;
         }
         
         /* Footer */
@@ -621,7 +754,7 @@
                 width: 250px;
             }
             
-            .favsong-content {
+            .modal-content {
                 padding: 1.5rem;
                 width: 95%;
             }
@@ -629,6 +762,19 @@
             .role-tag {
                 font-size: 0.9rem;
                 padding: 0.4rem 1rem;
+            }
+            
+            .podium-container {
+                gap: 1rem;
+            }
+            
+            .podium {
+                width: 100px;
+            }
+            
+            .podium-image {
+                width: 80px;
+                height: 80px;
             }
         }
         
@@ -683,6 +829,38 @@
                 font-size: 0.85rem;
                 padding: 0.3rem 0.8rem;
             }
+            
+            .podium-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .podium-item {
+                flex-direction: row;
+                gap: 1rem;
+                align-items: center;
+            }
+            
+            .podium {
+                width: 80px;
+                height: 60px;
+            }
+            
+            .podium-1 {
+                height: 70px;
+            }
+            
+            .podium-2 {
+                height: 65px;
+            }
+            
+            .podium-3 {
+                height: 60px;
+            }
+            
+            .podium-4 {
+                height: 55px;
+            }
         }
     </style>
 </head>
@@ -708,9 +886,6 @@
     <div class="music-controls">
         <button class="music-control-btn" id="music-control">
             <i class="fas fa-music"></i>
-        </button>
-        <button class="music-control-btn" id="favsong-btn">
-            <i class="fab fa-spotify"></i>
         </button>
     </div>
     
@@ -770,6 +945,47 @@
                 <span class="btn-text">Email</span>
             </a>
             
+            <!-- New Buttons -->
+            <button class="btn" id="programming-btn">
+                <i class="fas fa-code"></i>
+                <span class="btn-text">Programming Language</span>
+            </button>
+            
+            <button class="btn" id="favorite-person-btn">
+                <i class="fas fa-heart"></i>
+                <span class="btn-text">My Favorite Person</span>
+            </button>
+            
+            <button class="btn" id="myself-btn">
+                <i class="fas fa-user"></i>
+                <span class="btn-text">My Self</span>
+            </button>
+            
+            <button class="btn" id="friend-btn">
+                <i class="fas fa-user-friends"></i>
+                <span class="btn-text">My Friend</span>
+            </button>
+            
+            <button class="btn" id="randomize-btn">
+                <i class="fas fa-dice"></i>
+                <span class="btn-text">Randomize</span>
+            </button>
+            
+            <button class="btn" id="longing-btn">
+                <i class="fas fa-heartbeat"></i>
+                <span class="btn-text">My Longing</span>
+            </button>
+            
+            <button class="btn" id="favorite-musician-btn">
+                <i class="fas fa-guitar"></i>
+                <span class="btn-text">Favorite Musician</span>
+            </button>
+            
+            <button class="btn" id="family-btn">
+                <i class="fas fa-home"></i>
+                <span class="btn-text">Family</span>
+            </button>
+            
             <button class="btn" id="gallery-btn">
                 <i class="fas fa-images"></i>
                 <span class="btn-text">Gallery</span>
@@ -782,11 +998,11 @@
     </main>
     
     <!-- Fav Song Modal -->
-    <div class="favsong-modal" id="favsong-modal">
-        <div class="favsong-content">
-            <div class="favsong-header">
-                <h2 class="favsong-title">Favorite Playlist</h2>
-                <button class="close-favsong" id="close-favsong">
+    <div class="modal" id="favsong-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Favorite Playlist</h2>
+                <button class="close-modal" id="close-favsong">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -806,16 +1022,129 @@
         </div>
     </div>
     
-    <!-- Gallery Modal -->
-    <div class="gallery-modal" id="gallery-modal">
-        <div class="gallery-content">
-            <img class="gallery-image" id="main-gallery-image" src="" alt="Gallery Image">
-            
-            <div class="gallery-nav" id="gallery-nav">
-                <!-- Thumbnails will be added dynamically -->
+    <!-- Programming Languages Modal -->
+    <div class="modal" id="programming-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Programming Languages</h2>
+                <button class="close-modal" id="close-programming">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            
-            <button class="close-gallery" id="close-gallery">Tutup Gallery</button>
+            <div class="languages-container">
+                <div class="language-category">
+                    <div class="language-header">
+                        <i class="fab fa-js-square language-icon"></i>
+                        <h3 class="language-title">Javascript</h3>
+                    </div>
+                    <div class="language-items">
+                        <div class="language-item">Three.Js</div>
+                        <div class="language-item">React.Js</div>
+                        <div class="language-item">Node.Js</div>
+                        <div class="language-item">Next.Js</div>
+                        <div class="language-item">Vue.Js</div>
+                    </div>
+                </div>
+                
+                <div class="language-category">
+                    <div class="language-header">
+                        <i class="fab fa-php language-icon"></i>
+                        <h3 class="language-title">PHP</h3>
+                    </div>
+                    <div class="language-items">
+                        <div class="language-item">Laravel</div>
+                        <div class="language-item">Slim</div>
+                        <div class="language-item">CodeIgniter</div>
+                    </div>
+                </div>
+                
+                <div class="language-category">
+                    <div class="language-header">
+                        <i class="fab fa-python language-icon"></i>
+                        <h3 class="language-title">Python</h3>
+                    </div>
+                    <div class="language-items">
+                        <div class="language-item">TensorFlow</div>
+                        <div class="language-item">PyTorch</div>
+                        <div class="language-item">Flask</div>
+                        <div class="language-item">NumPy</div>
+                        <div class="language-item">Matplotlib</div>
+                        <div class="language-item">PyGame</div>
+                        <div class="language-item">OpenCV</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Favorite Person Modal -->
+    <div class="modal" id="favorite-person-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">My Favorite Person</h2>
+                <button class="close-modal" id="close-favorite-person">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <img class="favorite-person-image" id="favorite-person-image" src="" alt="My Favorite Person">
+        </div>
+    </div>
+    
+    <!-- Gallery Modal -->
+    <div class="modal" id="gallery-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="gallery-title">Gallery</h2>
+                <button class="close-modal" id="close-gallery">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="gallery-content">
+                <img class="gallery-image" id="main-gallery-image" src="" alt="Gallery Image">
+                
+                <div class="gallery-nav" id="gallery-nav">
+                    <!-- Thumbnails will be added dynamically -->
+                </div>
+                
+                <button class="close-gallery-btn" id="close-gallery-btn">Tutup Gallery</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Favorite Musician Modal -->
+    <div class="modal" id="favorite-musician-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Favorite Musician</h2>
+                <button class="close-modal" id="close-favorite-musician">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="podium-container">
+                <div class="podium-item podium-1">
+                    <img src="artis1.jpeg" class="podium-image" alt="Hindia" onerror="this.src='https://ui-avatars.com/api/?name=Hindia&background=FFD700&color=000&size=100&bold=true'">
+                    <div class="podium podium-1">1</div>
+                    <div class="podium-name">Hindia</div>
+                </div>
+                
+                <div class="podium-item podium-2">
+                    <img src="artis2.jpeg" class="podium-image" alt="Dv4d" onerror="this.src='https://ui-avatars.com/api/?name=Dv4d&background=C0C0C0&color=000&size=100&bold=true'">
+                    <div class="podium podium-2">2</div>
+                    <div class="podium-name">Dv4d</div>
+                </div>
+                
+                <div class="podium-item podium-3">
+                    <img src="artis3.jpeg" class="podium-image" alt="Feast" onerror="this.src='https://ui-avatars.com/api/?name=Feast&background=CD7F32&color=000&size=100&bold=true'">
+                    <div class="podium podium-3">3</div>
+                    <div class="podium-name">.Feast</div>
+                </div>
+                
+                <div class="podium-item podium-4">
+                    <img src="artis4.jpeg" class="podium-image" alt="Raavfy" onerror="this.src='https://ui-avatars.com/api/?name=Raavfy&background=333&color=fff&size=100&bold=true'">
+                    <div class="podium podium-4">4</div>
+                    <div class="podium-name">Raavfy</div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -832,15 +1161,31 @@
         const loadingFill = document.getElementById('loading-fill');
         const themeToggle = document.getElementById('theme-toggle');
         const musicControl = document.getElementById('music-control');
-        const favsongBtn = document.getElementById('favsong-btn');
         const spotifyBtn = document.getElementById('spotify-btn');
         const favsongModal = document.getElementById('favsong-modal');
         const closeFavsongBtn = document.getElementById('close-favsong');
         const musicStatus = document.getElementById('music-status');
         const profileImg = document.getElementById('profile-img');
+        const programmingBtn = document.getElementById('programming-btn');
+        const programmingModal = document.getElementById('programming-modal');
+        const closeProgrammingBtn = document.getElementById('close-programming');
+        const favoritePersonBtn = document.getElementById('favorite-person-btn');
+        const favoritePersonModal = document.getElementById('favorite-person-modal');
+        const favoritePersonImage = document.getElementById('favorite-person-image');
+        const closeFavoritePersonBtn = document.getElementById('close-favorite-person');
+        const myselfBtn = document.getElementById('myself-btn');
+        const friendBtn = document.getElementById('friend-btn');
+        const randomizeBtn = document.getElementById('randomize-btn');
+        const longingBtn = document.getElementById('longing-btn');
+        const favoriteMusicianBtn = document.getElementById('favorite-musician-btn');
+        const favoriteMusicianModal = document.getElementById('favorite-musician-modal');
+        const closeFavoriteMusicianBtn = document.getElementById('close-favorite-musician');
+        const familyBtn = document.getElementById('family-btn');
         const galleryBtn = document.getElementById('gallery-btn');
         const galleryModal = document.getElementById('gallery-modal');
         const closeGalleryBtn = document.getElementById('close-gallery');
+        const closeGalleryBtn2 = document.getElementById('close-gallery-btn');
+        const galleryTitle = document.getElementById('gallery-title');
         const mainGalleryImage = document.getElementById('main-gallery-image');
         const galleryNav = document.getElementById('gallery-nav');
         const backgroundMusic = document.getElementById('background-music');
@@ -850,6 +1195,7 @@
         let isMusicPlaying = false;
         let loadingProgress = 0;
         let musicFileExists = true;
+        let currentGalleryType = 'gallery';
         
         // Loading Animation dengan persentase 0-100%
         function simulateLoading() {
@@ -989,102 +1335,166 @@
             musicControl.style.display = 'none';
         });
         
-        // Fav Song Button (tombol kecil di header)
-        favsongBtn.addEventListener('click', () => {
-            favsongModal.style.display = 'flex';
-            
-            // Pause music when favsong opens
+        // Modal Management Functions
+        function openModal(modal) {
+            modal.style.display = 'flex';
+            // Pause music when modal opens
             if (isMusicPlaying) {
                 backgroundMusic.pause();
                 musicControl.classList.remove('playing');
                 musicControl.innerHTML = '<i class="fas fa-music"></i>';
                 isMusicPlaying = false;
             }
-        });
+        }
         
-        // Spotify Button (tombol utama)
-        spotifyBtn.addEventListener('click', () => {
-            favsongModal.style.display = 'flex';
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+        
+        function setupModalClose(modal, closeBtn) {
+            closeBtn.addEventListener('click', () => closeModal(modal));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal);
+                }
+            });
+        }
+        
+        // Spotify Button
+        spotifyBtn.addEventListener('click', () => openModal(favsongModal));
+        
+        // Programming Languages Button
+        programmingBtn.addEventListener('click', () => openModal(programmingModal));
+        
+        // Favorite Person Button
+        favoritePersonBtn.addEventListener('click', () => {
+            const imageExtensions = ['.jpeg', '.jpg', '.webp', '.png', '.gif'];
+            let formatIndex = 0;
             
-            // Pause music when spotify opens
-            if (isMusicPlaying) {
-                backgroundMusic.pause();
-                musicControl.classList.remove('playing');
-                musicControl.innerHTML = '<i class="fas fa-music"></i>';
-                isMusicPlaying = false;
+            function tryNextImageFormat() {
+                if (formatIndex < imageExtensions.length) {
+                    const baseName = 'favoriteperson';
+                    favoritePersonImage.src = baseName + imageExtensions[formatIndex];
+                    formatIndex++;
+                } else {
+                    // Fallback jika tidak ada gambar
+                    favoritePersonImage.alt = 'My Favorite Person';
+                    favoritePersonImage.style.display = 'none';
+                    const fallbackText = document.createElement('p');
+                    fallbackText.textContent = 'Gambar favoriteperson tidak ditemukan';
+                    fallbackText.style.textAlign = 'center';
+                    fallbackText.style.color = '#fff';
+                    favoritePersonModal.querySelector('.modal-content').appendChild(fallbackText);
+                }
             }
+            
+            favoritePersonImage.onerror = tryNextImageFormat;
+            favoritePersonImage.src = 'favoriteperson.jpeg';
+            openModal(favoritePersonModal);
         });
         
-        closeFavsongBtn.addEventListener('click', () => {
-            favsongModal.style.display = 'none';
-        });
+        // Gallery Management Functions - SEDERHANA LANGSUNG MENAMPILKAN FOTO YANG PASTI ADA
+        function getGalleryImages(type) {
+            // Daftar foto yang PASTI ADA sesuai info Anda
+            const galleries = {
+                'gallery': [
+                    'foto1.jpeg',
+                    'foto2.jpeg',
+                    'foto3.jpeg'
+                ],
+                'myself': [
+                    'myfoto1.jpeg',
+                    'myfoto2.jpeg',
+                    'myfoto3.jpeg',
+                    'myfoto4.jpeg',
+                    'myfoto5.jpeg',
+                    'myfoto6.jpeg',
+                    'myfoto7.jpeg',
+                    'myfoto8.jpeg',
+                    'myfoto9.jpeg',
+                    'myfoto10.jpeg'
+                ],
+                'friend': [
+                    'friendfoto1.jpeg',
+                    'friendfoto2.jpeg',
+                    'friendfoto3.jpeg',
+                    'friendfoto4.jpeg',
+                    'friendfoto5.jpeg',
+                    'friendfoto6.jpeg',
+                    'friendfoto7.jpeg',
+                    'friendfoto8.jpeg'
+                ],
+                'randomize': [
+                    'Random1.jpeg',
+                    'Random2.jpeg',
+                    'Random3.jpeg',
+                    'Random4.jpeg',
+                    'Random5.jpeg',
+                    'Random6.jpeg',
+                    'Random7.jpeg',
+                    'Random8.jpeg',
+                    'Random9.jpeg',
+                    'Random10.jpeg'
+                ],
+                'longing': [
+                    'chat1.jpeg',
+                    'chat2.jpeg',
+                    'chat3.jpeg'
+                ],
+                'family': [
+                    'keluarga1.jpeg',
+                    'keluarga2.jpeg',
+                    'keluarga3.jpeg',
+                    'keluarga4.jpeg'
+                ]
+            };
+            
+            return galleries[type] || [];
+        }
         
-        favsongModal.addEventListener('click', (e) => {
-            if (e.target === favsongModal) {
-                favsongModal.style.display = 'none';
-            }
-        });
-        
-        // Gallery Functionality
-        const galleryImages = [
-            { src: 'foto1.jpeg', alt: 'Foto 1' },
-            { src: 'foto2.jpeg', alt: 'Foto 2' },
-            { src: 'foto3.jpeg', alt: 'Foto 3' },
-            { src: 'foto4.jpeg', alt: 'Foto 4' }
-        ];
-        
-        const imageExtensions = ['.jpeg', '.jpg', '.webp', '.png', '.gif'];
-        
-        function initGallery() {
+        function initGallery(type, title) {
+            currentGalleryType = type;
+            galleryTitle.textContent = title;
             galleryNav.innerHTML = '';
             
-            galleryImages.forEach((image, index) => {
+            const galleryImages = getGalleryImages(type);
+            
+            if (galleryImages.length === 0) {
+                mainGalleryImage.style.display = 'none';
+                const noImagesText = document.createElement('p');
+                noImagesText.textContent = 'Tidak ada gambar yang ditemukan';
+                noImagesText.style.textAlign = 'center';
+                noImagesText.style.color = '#fff';
+                galleryNav.appendChild(noImagesText);
+                return;
+            }
+            
+            galleryImages.forEach((imageSrc, index) => {
                 const thumbnail = document.createElement('img');
                 thumbnail.className = 'gallery-thumbnail';
-                thumbnail.alt = image.alt;
+                thumbnail.alt = `Gambar ${index + 1}`;
+                thumbnail.src = imageSrc;
                 
-                let formatIndex = 0;
-                function tryNextThumbnailFormat() {
-                    if (formatIndex < imageExtensions.length) {
-                        const baseName = image.src.replace(/\.[^/.]+$/, "");
-                        thumbnail.src = baseName + imageExtensions[formatIndex];
-                        formatIndex++;
-                    }
-                }
-                
-                thumbnail.onerror = tryNextThumbnailFormat;
-                thumbnail.src = image.src;
+                thumbnail.onerror = function() {
+                    this.style.display = 'none';
+                    console.log(`Gambar tidak ditemukan: ${imageSrc}`);
+                };
                 
                 if (index === 0) {
                     thumbnail.classList.add('active');
+                    mainGalleryImage.src = imageSrc;
+                    mainGalleryImage.alt = `Gambar ${index + 1}`;
+                    mainGalleryImage.style.display = 'block';
                     
-                    let mainFormatIndex = 0;
-                    function tryNextMainImageFormat() {
-                        if (mainFormatIndex < imageExtensions.length) {
-                            const baseName = image.src.replace(/\.[^/.]+$/, "");
-                            mainGalleryImage.src = baseName + imageExtensions[mainFormatIndex];
-                            mainFormatIndex++;
-                        }
-                    }
-                    
-                    mainGalleryImage.onerror = tryNextMainImageFormat;
-                    mainGalleryImage.src = image.src;
-                    mainGalleryImage.alt = image.alt;
+                    mainGalleryImage.onerror = function() {
+                        this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%234a6cf7"/><text x="200" y="150" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Gambar tidak ditemukan</text></svg>';
+                        console.log(`Gambar utama tidak ditemukan: ${imageSrc}`);
+                    };
                 }
                 
                 thumbnail.addEventListener('click', () => {
-                    let mainFormatIndex = 0;
-                    function tryNextMainImageFormatFromThumb() {
-                        if (mainFormatIndex < imageExtensions.length) {
-                            const baseName = image.src.replace(/\.[^/.]+$/, "");
-                            mainGalleryImage.src = baseName + imageExtensions[mainFormatIndex];
-                            mainFormatIndex++;
-                        }
-                    }
-                    
-                    mainGalleryImage.onerror = tryNextMainImageFormatFromThumb;
-                    mainGalleryImage.src = image.src;
-                    mainGalleryImage.alt = image.alt;
+                    mainGalleryImage.src = imageSrc;
+                    mainGalleryImage.alt = `Gambar ${index + 1}`;
                     
                     document.querySelectorAll('.gallery-thumbnail').forEach(thumb => {
                         thumb.classList.remove('active');
@@ -1094,30 +1504,59 @@
                 
                 galleryNav.appendChild(thumbnail);
             });
+            
+            // Tampilkan info jumlah foto
+            const countInfo = document.createElement('p');
+            countInfo.textContent = `Total: ${galleryImages.length} foto`;
+            countInfo.style.textAlign = 'center';
+            countInfo.style.color = '#4a6cf7';
+            countInfo.style.marginTop = '10px';
+            countInfo.style.fontWeight = '500';
+            galleryNav.appendChild(countInfo);
         }
         
+        // Gallery Buttons
         galleryBtn.addEventListener('click', () => {
-            initGallery();
-            galleryModal.style.display = 'flex';
-            
-            // Pause music when gallery opens
-            if (isMusicPlaying) {
-                backgroundMusic.pause();
-                musicControl.classList.remove('playing');
-                musicControl.innerHTML = '<i class="fas fa-music"></i>';
-                isMusicPlaying = false;
-            }
+            initGallery('gallery', 'Gallery (3 foto)');
+            openModal(galleryModal);
         });
         
-        closeGalleryBtn.addEventListener('click', () => {
-            galleryModal.style.display = 'none';
+        myselfBtn.addEventListener('click', () => {
+            initGallery('myself', 'My Self (10 foto)');
+            openModal(galleryModal);
         });
         
-        galleryModal.addEventListener('click', (e) => {
-            if (e.target === galleryModal) {
-                galleryModal.style.display = 'none';
-            }
+        friendBtn.addEventListener('click', () => {
+            initGallery('friend', 'My Friend (8 foto)');
+            openModal(galleryModal);
         });
+        
+        randomizeBtn.addEventListener('click', () => {
+            initGallery('randomize', 'Randomize (10 foto)');
+            openModal(galleryModal);
+        });
+        
+        longingBtn.addEventListener('click', () => {
+            initGallery('longing', 'My Longing (3 foto)');
+            openModal(galleryModal);
+        });
+        
+        familyBtn.addEventListener('click', () => {
+            initGallery('family', 'Family (4 foto)');
+            openModal(galleryModal);
+        });
+        
+        // Favorite Musician Button
+        favoriteMusicianBtn.addEventListener('click', () => openModal(favoriteMusicianModal));
+        
+        // Setup modal close events
+        setupModalClose(favsongModal, closeFavsongBtn);
+        setupModalClose(programmingModal, closeProgrammingBtn);
+        setupModalClose(favoritePersonModal, closeFavoritePersonBtn);
+        setupModalClose(favoriteMusicianModal, closeFavoriteMusicianBtn);
+        setupModalClose(galleryModal, closeGalleryBtn);
+        
+        closeGalleryBtn2.addEventListener('click', () => closeModal(galleryModal));
         
         // Add hover effect to all buttons
         document.querySelectorAll('.btn').forEach(button => {
@@ -1138,6 +1577,19 @@
             
             tag.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Add hover effect to language items
+        document.querySelectorAll('.language-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.backgroundColor = 'rgba(74, 108, 247, 0.2)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.backgroundColor = '';
             });
         });
     </script>
