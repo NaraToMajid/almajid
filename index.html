@@ -1494,7 +1494,7 @@
                         <!-- Apps Container -->
                         <div class="apps-container">
                             <!-- 3 Tombol Utama -->
-                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                            <a href="https://kalkulator-one-beta.vercel.app/" class="app-btn" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-calculator"></i>
                                 </div>
@@ -1504,7 +1504,7 @@
                                 </div>
                             </a>
                             
-                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                            <a href="https://notepad-lake-tau.vercel.app/" class="app-btn" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-sticky-note"></i>
                                 </div>
@@ -1514,7 +1514,7 @@
                                 </div>
                             </a>
                             
-                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                            <a href="https://photobooth-beta-steel.vercel.app/" class="app-btn" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-camera"></i>
                                 </div>
@@ -1826,6 +1826,7 @@
         let currentGalleryType = 'gallery';
         let currentSlide = 1;
         let currentPlayingTrack = null;
+        let audioElements = {};
         
         // Music tracks data - DETECT MANUALLY ONE BY ONE
         const musicTracks = [
@@ -2060,7 +2061,10 @@
                 return;
             }
             
-            // Check each track for availability
+            // Clear audio elements
+            audioElements = {};
+            
+            // Check each track for availability - mulai dari track 1 (atas)
             musicTracks.forEach(track => {
                 checkFileExists(track.audio, (audioExists) => {
                     checkFileExists(track.image, (imageExists) => {
@@ -2071,8 +2075,8 @@
                         trackElement.dataset.trackId = track.id;
                         
                         const imageUrl = imageExists ? track.image : `https://ui-avatars.com/api/?name=${encodeURIComponent(track.artist)}&background=4a6cf7&color=fff&size=100&bold=true`;
-                        const artistName = track.artist === 'Nama_Artis' + track.id ? 'Coming Soon' : track.artist;
-                        const songTitle = track.title === 'Judul_Lagu' + track.id ? 'Coming Soon' : track.title;
+                        const artistName = track.artist.startsWith('Nama_Artis') ? 'Coming Soon' : track.artist;
+                        const songTitle = track.title.startsWith('Judul_Lagu') ? 'Coming Soon' : track.title;
                         
                         trackElement.innerHTML = `
                             <img src="${imageUrl}" class="track-image" alt="${songTitle}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(track.artist)}&background=4a6cf7&color=fff&size=100&bold=true'">
@@ -2098,11 +2102,38 @@
                         if (playBtn && track.isAvailable) {
                             playBtn.addEventListener('click', function() {
                                 const trackId = parseInt(trackElement.dataset.trackId);
-                                const track = musicTracks.find(t => t.id === trackId);
-                                
-                                if (!track || !track.isAvailable) return;
-                                
                                 playTrack(trackId, this);
+                            });
+                        }
+                        
+                        // Pre-create audio element
+                        if (track.isAvailable) {
+                            const audio = new Audio(track.audio);
+                            audio.id = `audio-${track.id}`;
+                            audio.volume = 0.7;
+                            audioElements[track.id] = audio;
+                            
+                            // Add event listener for when track ends
+                            audio.addEventListener('ended', () => {
+                                const playButton = document.querySelector(`.music-track[data-track-id="${track.id}"] .play-btn`);
+                                if (playButton) {
+                                    playButton.classList.remove('playing');
+                                    playButton.innerHTML = '<i class="fas fa-play"></i>';
+                                }
+                                currentPlayingTrack = null;
+                            });
+                            
+                            // Add event listener for errors
+                            audio.addEventListener('error', () => {
+                                console.log(`Error loading audio: ${track.audio}`);
+                                track.isAvailable = false;
+                                const playButton = document.querySelector(`.music-track[data-track-id="${track.id}"] .play-btn`);
+                                if (playButton) {
+                                    playButton.classList.add('disabled');
+                                    playButton.disabled = true;
+                                    playButton.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                                    playButton.title = 'Error loading audio';
+                                }
                             });
                         }
                     });
@@ -2127,9 +2158,12 @@
             
             if (!track || !track.isAvailable) return;
             
+            const audio = audioElements[trackId];
+            if (!audio) return;
+            
             // Stop currently playing track if any
             if (currentPlayingTrack && currentPlayingTrack !== trackId) {
-                const currentAudio = document.getElementById(`audio-${currentPlayingTrack}`);
+                const currentAudio = audioElements[currentPlayingTrack];
                 if (currentAudio) {
                     currentAudio.pause();
                     currentAudio.currentTime = 0;
@@ -2143,29 +2177,63 @@
                 }
             }
             
-            // Create or get audio element
-            let audioElement = document.getElementById(`audio-${trackId}`);
-            if (!audioElement) {
-                audioElement = new Audio(track.audio);
-                audioElement.id = `audio-${trackId}`;
-                audioElement.volume = 0.7;
+            if (audio.paused) {
+                // Pause background music if playing
+                if (isMusicPlaying) {
+                    backgroundMusic.pause();
+                    musicControl.classList.remove('playing');
+                    musicControl.innerHTML = '<i class="fas fa-music"></i>';
+                    isMusicPlaying = false;
+                }
                 
-                audioElement.addEventListener('ended', () => {
-                    playButton.classList.remove('playing');
-                    playButton.innerHTML = '<i class="fas fa-play"></i>';
-                    currentPlayingTrack = null;
-                });
-            }
-            
-            if (audioElement.paused) {
-                audioElement.play();
-                playButton.classList.add('playing');
-                playButton.innerHTML = '<i class="fas fa-pause"></i>';
-                currentPlayingTrack = trackId;
+                // Play the track
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        playButton.classList.add('playing');
+                        playButton.innerHTML = '<i class="fas fa-pause"></i>';
+                        currentPlayingTrack = trackId;
+                    }).catch(error => {
+                        console.log("Autoplay prevented for track:", error);
+                        // Show message to user
+                        musicStatus.textContent = 'Klik tombol play lagi untuk memutar lagu';
+                        musicStatus.classList.add('show');
+                        setTimeout(() => {
+                            musicStatus.classList.remove('show');
+                        }, 3000);
+                    });
+                }
             } else {
-                audioElement.pause();
+                // Pause the track
+                audio.pause();
                 playButton.classList.remove('playing');
                 playButton.innerHTML = '<i class="fas fa-play"></i>';
+                currentPlayingTrack = null;
+            }
+        }
+        
+        // Stop all music
+        function stopAllMusic() {
+            // Stop background music
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicControl.classList.remove('playing');
+                musicControl.innerHTML = '<i class="fas fa-music"></i>';
+                isMusicPlaying = false;
+            }
+            
+            // Stop any playing track
+            if (currentPlayingTrack && audioElements[currentPlayingTrack]) {
+                audioElements[currentPlayingTrack].pause();
+                audioElements[currentPlayingTrack].currentTime = 0;
+                
+                // Reset play button
+                const playButton = document.querySelector(`.music-track[data-track-id="${currentPlayingTrack}"] .play-btn`);
+                if (playButton) {
+                    playButton.classList.remove('playing');
+                    playButton.innerHTML = '<i class="fas fa-play"></i>';
+                }
                 currentPlayingTrack = null;
             }
         }
@@ -2207,7 +2275,7 @@
             if (!musicFileExists) return;
             
             if (isMusicPlaying) {
-                // Matikan musik
+                // Matikan musik background
                 backgroundMusic.pause();
                 musicControl.classList.remove('playing');
                 musicControl.innerHTML = '<i class="fas fa-music"></i>';
@@ -2219,7 +2287,10 @@
                     musicStatus.classList.remove('show');
                 }, 2000);
             } else {
-                // Nyalakan musik
+                // Hentikan semua track yang sedang diputar
+                stopAllMusic();
+                
+                // Nyalakan musik background
                 const playPromise = backgroundMusic.play();
                 
                 if (playPromise !== undefined) {
@@ -2271,8 +2342,15 @@
             }
         }
         
-        slide1Btn.addEventListener('click', () => goToSlide(1));
-        slide2Btn.addEventListener('click', () => goToSlide(2));
+        slide1Btn.addEventListener('click', () => {
+            goToSlide(1);
+            stopAllMusic();
+        });
+        
+        slide2Btn.addEventListener('click', () => {
+            goToSlide(2);
+            stopAllMusic();
+        });
         
         // Request Music Button
         requestMusicBtn.addEventListener('click', () => {
@@ -2351,29 +2429,7 @@
         // Modal Management Functions
         function openModal(modal) {
             modal.style.display = 'flex';
-            // Pause music when modal opens
-            if (isMusicPlaying) {
-                backgroundMusic.pause();
-                musicControl.classList.remove('playing');
-                musicControl.innerHTML = '<i class="fas fa-music"></i>';
-                isMusicPlaying = false;
-            }
-            
-            // Pause any playing track
-            if (currentPlayingTrack) {
-                const audioElement = document.getElementById(`audio-${currentPlayingTrack}`);
-                if (audioElement) {
-                    audioElement.pause();
-                    
-                    // Reset play button
-                    const playButton = document.querySelector(`.music-track[data-track-id="${currentPlayingTrack}"] .play-btn`);
-                    if (playButton) {
-                        playButton.classList.remove('playing');
-                        playButton.innerHTML = '<i class="fas fa-play"></i>';
-                    }
-                }
-                currentPlayingTrack = null;
-            }
+            stopAllMusic();
         }
         
         function closeModal(modal) {
