@@ -1217,66 +1217,6 @@
             50% { opacity: 0; }
         }
         
-        /* NEW: Music Visualizer */
-        #music-visualizer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            z-index: -1;
-            opacity: 0.3;
-            display: none;
-            pointer-events: none;
-        }
-        
-        .music-visualizer-canvas {
-            width: 100%;
-            height: 100%;
-        }
-        
-        /* NEW: Visualizer Toggle Button */
-        .visualizer-toggle-btn {
-            position: fixed;
-            top: 20px;
-            right: 90px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.8s ease forwards;
-            animation-delay: 0.4s;
-        }
-        
-        .light-mode .visualizer-toggle-btn {
-            background-color: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: #121212;
-        }
-        
-        .visualizer-toggle-btn:hover {
-            transform: scale(1.1);
-            background-color: #4a6cf7;
-            color: white;
-        }
-        
-        .visualizer-toggle-btn.active {
-            background-color: #4a6cf7;
-            color: white;
-        }
-        
         /* NEW: Scroll Animation Class */
         .scroll-reveal {
             opacity: 0;
@@ -1287,70 +1227,6 @@
         .scroll-reveal.revealed {
             opacity: 1;
             transform: translateY(0);
-        }
-        
-        /* NEW: Visualizer Modal */
-        .visualizer-modal-content {
-            width: 90%;
-            max-width: 800px;
-            height: 70vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .visualizer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .visualizer-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #4a6cf7;
-        }
-        
-        .light-mode .visualizer-title {
-            color: #4a6cf7;
-        }
-        
-        .visualizer-canvas-container {
-            flex-grow: 1;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .fullscreen-visualizer {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .visualizer-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .visualizer-mode-select {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        
-        .light-mode .visualizer-mode-select {
-            background-color: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: #121212;
         }
         
         /* NEW: Particles Control Button */
@@ -1569,15 +1445,7 @@
                 height: 35px;
             }
             
-            /* NEW: Responsive visualizer controls */
-            .visualizer-toggle-btn {
-                top: 15px;
-                right: 75px;
-                width: 45px;
-                height: 45px;
-                font-size: 1rem;
-            }
-            
+            /* NEW: Responsive particles controls */
             .particles-control-btn {
                 top: 15px;
                 right: 125px;
@@ -1742,14 +1610,7 @@
                 justify-content: center;
             }
             
-            /* NEW: Mobile visualizer controls */
-            .visualizer-toggle-btn {
-                right: 70px;
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-            
+            /* NEW: Mobile particles controls */
             .particles-control-btn {
                 right: 115px;
                 width: 40px;
@@ -1815,11 +1676,6 @@
     <!-- NEW: Particles Container -->
     <div id="particles-js"></div>
     
-    <!-- NEW: Music Visualizer -->
-    <div id="music-visualizer">
-        <canvas class="music-visualizer-canvas" id="visualizer-canvas"></canvas>
-    </div>
-    
     <!-- Theme Toggle -->
     <button class="control-btn theme-toggle" id="theme-toggle">
         <i class="fas fa-moon"></i>
@@ -1828,11 +1684,6 @@
     <!-- NEW: Particles Control Button -->
     <button class="particles-control-btn" id="particles-toggle">
         <i class="fas fa-star"></i>
-    </button>
-    
-    <!-- NEW: Visualizer Control Button -->
-    <button class="visualizer-toggle-btn" id="visualizer-toggle">
-        <i class="fas fa-wave-square"></i>
     </button>
     
     <!-- Music Controls -->
@@ -1967,12 +1818,6 @@
                             <i class="fas fa-images"></i>
                             <span class="btn-text">Gallery</span>
                         </button>
-                        
-                        <!-- NEW: Visualizer Button -->
-                        <button class="btn" id="visualizer-fullscreen-btn">
-                            <i class="fas fa-expand"></i>
-                            <span class="btn-text">Fullscreen Visualizer</span>
-                        </button>
                     </div>
                     
                     <div class="footer">
@@ -2023,7 +1868,7 @@
                                 </div>
                             </a>
                             
-                            <!-- NEW: 2 Tombol Embed dari iframe -->
+                            <!-- NEW: 3 Tombol Embed dari iframe -->
                             <button class="app-btn scroll-reveal" id="deepseek-embed-btn">
                                 <div class="app-icon">
                                     <i class="fas fa-robot"></i>
@@ -2044,16 +1889,16 @@
                                 </div>
                             </button>
                             
-                            <!-- Satu tombol Coming Soon tetap -->
-                            <a href="Link Website Isi Disini" class="app-btn scroll-reveal" target="_blank">
+                            <!-- NEW: Tombol Komiku Embed -->
+                            <button class="app-btn scroll-reveal" id="komiku-embed-btn">
                                 <div class="app-icon">
-                                    <i class="fas fa-clock"></i>
+                                    <i class="fas fa-book"></i>
                                 </div>
                                 <div class="app-text">
-                                    <div class="app-title">Coming Soon</div>
-                                    <div class="app-desc">Fitur menarik sedang dalam pengembangan</div>
+                                    <div class="app-title">Komiku</div>
+                                    <div class="app-desc">Baca komik online gratis di website</div>
                                 </div>
-                            </a>
+                            </button>
                         </div>
                         
                         <!-- Music Player Section -->
@@ -2262,37 +2107,6 @@
         </div>
     </div>
     
-    <!-- NEW: Fullscreen Visualizer Modal -->
-    <div class="modal" id="visualizer-modal">
-        <div class="modal-content visualizer-modal-content">
-            <div class="visualizer-header">
-                <h2 class="visualizer-title">Music Visualizer</h2>
-                <button class="close-modal" id="close-visualizer">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="visualizer-canvas-container">
-                <canvas class="fullscreen-visualizer" id="fullscreen-visualizer"></canvas>
-            </div>
-            <div class="visualizer-controls">
-                <div>
-                    <select class="visualizer-mode-select" id="visualizer-mode-select">
-                        <option value="bars">Bars</option>
-                        <option value="circle">Circle</option>
-                        <option value="wave">Wave</option>
-                        <option value="particles">Particles</option>
-                    </select>
-                </div>
-                <div>
-                    <button class="request-btn" id="visualizer-color-btn">
-                        <i class="fas fa-palette"></i>
-                        <span>Change Color</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- NEW: DeepSeek Embed Modal -->
     <div class="modal" id="deepseek-embed-modal">
         <div class="modal-content" style="width: 95%; max-width: 1200px; height: 85vh;">
@@ -2346,6 +2160,31 @@
                 </div>
                 <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 1rem;">
                     Cari dan tonton video YouTube langsung di website
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: Komiku Embed Modal -->
+    <div class="modal" id="komiku-embed-modal">
+        <div class="modal-content" style="width: 95%; max-width: 1200px; height: 85vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">Komiku - Baca Komik Online</h2>
+                <button class="close-modal" id="close-komiku">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="width: 100%; height: 80%;">
+                <iframe 
+                    src="https://komiku.org/" 
+                    style="width: 100%; height: 100%; border: none; border-radius: 10px;"
+                    allow="fullscreen"
+                    title="Komiku - Baca Komik Online">
+                </iframe>
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">
+                    Baca komik online gratis di Komiku | Update terbaru setiap hari
                 </p>
             </div>
         </div>
@@ -2421,21 +2260,16 @@
         
         // NEW: Upgrade DOM Elements
         const particlesToggle = document.getElementById('particles-toggle');
-        const visualizerToggle = document.getElementById('visualizer-toggle');
-        const visualizerCanvas = document.getElementById('visualizer-canvas');
-        const visualizerFullscreenBtn = document.getElementById('visualizer-fullscreen-btn');
-        const visualizerModal = document.getElementById('visualizer-modal');
-        const closeVisualizerBtn = document.getElementById('close-visualizer');
-        const fullscreenVisualizer = document.getElementById('fullscreen-visualizer');
-        const visualizerModeSelect = document.getElementById('visualizer-mode-select');
-        const visualizerColorBtn = document.getElementById('visualizer-color-btn');
         const typingText = document.getElementById('typing-text');
         const deepseekEmbedBtn = document.getElementById('deepseek-embed-btn');
         const youtubeEmbedBtn = document.getElementById('youtube-embed-btn');
+        const komikuEmbedBtn = document.getElementById('komiku-embed-btn');
         const deepseekEmbedModal = document.getElementById('deepseek-embed-modal');
         const youtubeEmbedModal = document.getElementById('youtube-embed-modal');
+        const komikuEmbedModal = document.getElementById('komiku-embed-modal');
         const closeDeepseekBtn = document.getElementById('close-deepseek');
         const closeYoutubeBtn = document.getElementById('close-youtube');
+        const closeKomikuBtn = document.getElementById('close-komiku');
         const youtubeSearchInput = document.getElementById('youtube-search');
         const youtubeSearchBtn = document.getElementById('youtube-search-btn');
         
@@ -2451,15 +2285,6 @@
         
         // NEW: Upgrade State Variables
         let particlesActive = true;
-        let visualizerActive = false;
-        let visualizerFullscreen = false;
-        let audioContext = null;
-        let audioAnalyser = null;
-        let audioSource = null;
-        let visualizerAnimationId = null;
-        let currentVisualizerMode = 'bars';
-        let visualizerColorIndex = 0;
-        const visualizerColors = ['#4a6cf7', '#ff4757', '#2ed573', '#ffa502', '#ff6b81', '#1e90ff', '#ff6348'];
         let typingTextIndex = 0;
         let typingTextArray = ['Website Programming | UI/UX Designer | Vibecoding', 'Creating beautiful and functional web experiences', 'Passionate about coding and design'];
         let typingTextCurrent = 0;
@@ -2809,283 +2634,6 @@
             checkScroll();
         }
         
-        // NEW: Initialize Music Visualizer
-        function initVisualizer() {
-            // Create audio context if not exists
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                audioAnalyser = audioContext.createAnalyser();
-                audioAnalyser.fftSize = 256;
-            }
-            
-            // Get canvas contexts
-            const canvas = visualizerCanvas;
-            const canvasCtx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            const fullCanvas = fullscreenVisualizer;
-            const fullCanvasCtx = fullCanvas.getContext('2d');
-            fullCanvas.width = fullCanvas.offsetWidth;
-            fullCanvas.height = fullCanvas.offsetHeight;
-            
-            // Visualizer data array
-            const bufferLength = audioAnalyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            
-            // Draw function
-            function drawVisualizer() {
-                if (!visualizerActive && !visualizerFullscreen) return;
-                
-                // Get canvas context based on mode
-                const ctx = visualizerFullscreen ? fullCanvasCtx : canvasCtx;
-                const currentCanvas = visualizerFullscreen ? fullCanvas : canvas;
-                
-                // Clear canvas
-                ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
-                
-                // Get frequency data
-                audioAnalyser.getByteFrequencyData(dataArray);
-                
-                // Draw based on mode
-                switch (currentVisualizerMode) {
-                    case 'bars':
-                        drawBars(ctx, currentCanvas, dataArray, bufferLength);
-                        break;
-                    case 'circle':
-                        drawCircle(ctx, currentCanvas, dataArray, bufferLength);
-                        break;
-                    case 'wave':
-                        drawWave(ctx, currentCanvas, dataArray, bufferLength);
-                        break;
-                    case 'particles':
-                        drawParticles(ctx, currentCanvas, dataArray, bufferLength);
-                        break;
-                }
-                
-                visualizerAnimationId = requestAnimationFrame(drawVisualizer);
-            }
-            
-            // Draw bars visualizer
-            function drawBars(ctx, canvas, dataArray, bufferLength) {
-                const barWidth = (canvas.width / bufferLength) * 2.5;
-                let barHeight;
-                let x = 0;
-                
-                for (let i = 0; i < bufferLength; i++) {
-                    barHeight = dataArray[i] * (canvas.height / 256);
-                    
-                    const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
-                    gradient.addColorStop(0, visualizerColors[visualizerColorIndex]);
-                    gradient.addColorStop(1, visualizerColors[(visualizerColorIndex + 1) % visualizerColors.length]);
-                    
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                    
-                    x += barWidth + 1;
-                }
-            }
-            
-            // Draw circle visualizer
-            function drawCircle(ctx, canvas, dataArray, bufferLength) {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const radius = Math.min(canvas.width, canvas.height) / 4;
-                
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = 'rgba(74, 108, 247, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                for (let i = 0; i < bufferLength; i++) {
-                    const angle = (i * 2 * Math.PI) / bufferLength;
-                    const value = dataArray[i];
-                    const pointRadius = radius + (value * 0.5);
-                    
-                    const x = centerX + Math.cos(angle) * pointRadius;
-                    const y = centerY + Math.sin(angle) * pointRadius;
-                    
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                    ctx.fillStyle = visualizerColors[visualizerColorIndex];
-                    ctx.fill();
-                }
-            }
-            
-            // Draw wave visualizer
-            function drawWave(ctx, canvas, dataArray, bufferLength) {
-                ctx.beginPath();
-                
-                const sliceWidth = canvas.width * 1.0 / bufferLength;
-                let x = 0;
-                
-                for (let i = 0; i < bufferLength; i++) {
-                    const v = dataArray[i] / 128.0;
-                    const y = v * canvas.height / 2;
-                    
-                    if (i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                    
-                    x += sliceWidth;
-                }
-                
-                ctx.lineTo(canvas.width, canvas.height / 2);
-                ctx.strokeStyle = visualizerColors[visualizerColorIndex];
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            }
-            
-            // Draw particles visualizer
-            function drawParticles(ctx, canvas, dataArray, bufferLength) {
-                const particles = [];
-                const particleCount = 50;
-                
-                for (let i = 0; i < particleCount; i++) {
-                    const value = dataArray[Math.floor(i * bufferLength / particleCount)];
-                    particles.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height,
-                        size: value * 0.05,
-                        speedX: (Math.random() - 0.5) * 2,
-                        speedY: (Math.random() - 0.5) * 2
-                    });
-                }
-                
-                particles.forEach(particle => {
-                    particle.x += particle.speedX;
-                    particle.y += particle.speedY;
-                    
-                    // Bounce off walls
-                    if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
-                    if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
-                    
-                    ctx.beginPath();
-                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                    ctx.fillStyle = visualizerColors[visualizerColorIndex];
-                    ctx.fill();
-                });
-            }
-            
-            // Start visualizer
-            function startVisualizer() {
-                if (visualizerAnimationId) {
-                    cancelAnimationFrame(visualizerAnimationId);
-                }
-                drawVisualizer();
-            }
-            
-            // Connect audio source to analyser
-            function connectAudioSource(audioElement) {
-                if (audioSource) {
-                    audioSource.disconnect();
-                }
-                
-                audioSource = audioContext.createMediaElementSource(audioElement);
-                audioSource.connect(audioAnalyser);
-                audioAnalyser.connect(audioContext.destination);
-                
-                startVisualizer();
-            }
-            
-            // Toggle visualizer
-            function toggleVisualizer() {
-                visualizerActive = !visualizerActive;
-                
-                if (visualizerActive) {
-                    visualizerToggle.classList.add('active');
-                    visualizerToggle.innerHTML = '<i class="fas fa-wave-square"></i>';
-                    document.getElementById('music-visualizer').style.display = 'block';
-                    
-                    // Connect to background music if playing
-                    if (isMusicPlaying) {
-                        connectAudioSource(backgroundMusic);
-                    } else if (currentPlayingTrack && audioElements[currentPlayingTrack]) {
-                        connectAudioSource(audioElements[currentPlayingTrack]);
-                    }
-                    
-                    startVisualizer();
-                } else {
-                    visualizerToggle.classList.remove('active');
-                    visualizerToggle.innerHTML = '<i class="fas fa-wave-square"></i>';
-                    document.getElementById('music-visualizer').style.display = 'none';
-                    
-                    if (visualizerAnimationId) {
-                        cancelAnimationFrame(visualizerAnimationId);
-                    }
-                }
-            }
-            
-            // Change visualizer color
-            function changeVisualizerColor() {
-                visualizerColorIndex = (visualizerColorIndex + 1) % visualizerColors.length;
-            }
-            
-            // Change visualizer mode
-            function changeVisualizerMode(mode) {
-                currentVisualizerMode = mode;
-                if (visualizerActive || visualizerFullscreen) {
-                    startVisualizer();
-                }
-            }
-            
-            // Open fullscreen visualizer
-            function openFullscreenVisualizer() {
-                visualizerFullscreen = true;
-                openModal(visualizerModal);
-                
-                // Resize canvas
-                fullscreenVisualizer.width = fullscreenVisualizer.offsetWidth;
-                fullscreenVisualizer.height = fullscreenVisualizer.offsetHeight;
-                
-                // Connect audio source
-                if (isMusicPlaying) {
-                    connectAudioSource(backgroundMusic);
-                } else if (currentPlayingTrack && audioElements[currentPlayingTrack]) {
-                    connectAudioSource(audioElements[currentPlayingTrack]);
-                }
-                
-                startVisualizer();
-            }
-            
-            // Close fullscreen visualizer
-            function closeFullscreenVisualizer() {
-                visualizerFullscreen = false;
-                closeModal(visualizerModal);
-                
-                if (visualizerAnimationId) {
-                    cancelAnimationFrame(visualizerAnimationId);
-                }
-                
-                // Restart regular visualizer if active
-                if (visualizerActive) {
-                    startVisualizer();
-                }
-            }
-            
-            // Event listeners
-            visualizerToggle.addEventListener('click', toggleVisualizer);
-            visualizerFullscreenBtn.addEventListener('click', openFullscreenVisualizer);
-            visualizerColorBtn.addEventListener('click', changeVisualizerColor);
-            visualizerModeSelect.addEventListener('change', (e) => {
-                changeVisualizerMode(e.target.value);
-            });
-            
-            // Return public methods
-            return {
-                connectAudioSource,
-                toggleVisualizer,
-                openFullscreenVisualizer,
-                closeFullscreenVisualizer
-            };
-        }
-        
-        // NEW: Connect audio to visualizer when playing
-        const visualizer = initVisualizer();
-        
         // Loading Animation dengan persentase 0-100%
         function simulateLoading() {
             const interval = setInterval(() => {
@@ -3173,8 +2721,7 @@
                 { selector: '.music-control-btn', delay: 300 },
                 { selector: '.slider-nav-btn', delay: 400 },
                 { selector: '.slide-indicator', delay: 500 },
-                { selector: '.particles-control-btn', delay: 600 },
-                { selector: '.visualizer-toggle-btn', delay: 700 }
+                { selector: '.particles-control-btn', delay: 600 }
             ];
             
             elementsToAnimate.forEach(item => {
@@ -3388,11 +2935,6 @@
                         playButton.classList.add('playing');
                         playButton.innerHTML = '<i class="fas fa-pause"></i>';
                         currentPlayingTrack = trackId;
-                        
-                        // NEW: Connect to visualizer
-                        if (visualizerActive || visualizerFullscreen) {
-                            visualizer.connectAudioSource(audio);
-                        }
                     }).catch(error => {
                         console.log("Autoplay prevented for track:", error);
                         // Show message to user
@@ -3527,11 +3069,6 @@
                     playPromise.then(() => {
                         musicControl.classList.add('playing');
                         musicControl.innerHTML = '<i class="fas fa-volume-up"></i>';
-                        
-                        // NEW: Connect to visualizer
-                        if (visualizerActive || visualizerFullscreen) {
-                            visualizer.connectAudioSource(backgroundMusic);
-                        }
                         
                         // Tampilkan status
                         musicStatus.textContent = 'Musik dinyalakan';
@@ -3892,6 +3429,7 @@
         // NEW: Embed Buttons
         deepseekEmbedBtn.addEventListener('click', () => openModal(deepseekEmbedModal));
         youtubeEmbedBtn.addEventListener('click', () => openModal(youtubeEmbedModal));
+        komikuEmbedBtn.addEventListener('click', () => openModal(komikuEmbedModal));
         
         // NEW: YouTube Search Functionality
         youtubeSearchBtn.addEventListener('click', () => {
@@ -3916,9 +3454,9 @@
         setupModalClose(favoriteMusicianModal, closeFavoriteMusicianBtn);
         setupModalClose(galleryModal, closeGalleryBtn);
         setupModalClose(galleryRequestModal, closeGalleryRequestBtn);
-        setupModalClose(visualizerModal, closeVisualizerBtn);
         setupModalClose(deepseekEmbedModal, closeDeepseekBtn);
         setupModalClose(youtubeEmbedModal, closeYoutubeBtn);
+        setupModalClose(komikuEmbedModal, closeKomikuBtn);
         
         closeGalleryBtn2.addEventListener('click', () => closeModal(galleryModal));
         closeGalleryRequestBtn2.addEventListener('click', () => closeModal(galleryRequestModal));
@@ -4001,19 +3539,6 @@
             
             // Cek apakah file musik ada
             checkMusicFile();
-        });
-        
-        // NEW: Handle window resize for visualizer
-        window.addEventListener('resize', () => {
-            if (visualizerCanvas) {
-                visualizerCanvas.width = visualizerCanvas.offsetWidth;
-                visualizerCanvas.height = visualizerCanvas.offsetHeight;
-            }
-            
-            if (fullscreenVisualizer && visualizerFullscreen) {
-                fullscreenVisualizer.width = fullscreenVisualizer.offsetWidth;
-                fullscreenVisualizer.height = fullscreenVisualizer.offsetHeight;
-            }
         });
     </script>
 </body>
