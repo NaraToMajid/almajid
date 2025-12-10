@@ -6,7 +6,7 @@
     <title>Al'Majid - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -26,6 +26,86 @@
         body.light-mode {
             background-color: #f8f9fa;
             color: #121212;
+        }
+        
+        /* Oradev Intro Overlay */
+        #oradev-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        
+        #oradev-intro.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .oradev-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .oradev-logo-container {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            z-index: 20;
+        }
+        
+        .oradev-logo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3));
+        }
+        
+        .oradev-text {
+            position: absolute;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 3.5rem;
+            color: #fff;
+            opacity: 0;
+            z-index: 30;
+            white-space: nowrap;
+        }
+        
+        @keyframes oradev-roll-in {
+            0% { transform: translateX(300px) rotate(0deg); opacity: 0; }
+            100% { transform: translateX(0) rotate(360deg); opacity: 1; }
+        }
+        
+        @keyframes oradev-return-center {
+            0% { transform: translateX(0) rotate(360deg); }
+            100% { transform: translateX(0) rotate(720deg); }
+        }
+        
+        @keyframes oradev-grow-logo {
+            0% { width: 120px; height: 120px; transform: translateX(0) rotate(720deg); }
+            100% { width: 140px; height: 140px; transform: translateX(0) rotate(720deg); }
+        }
+        
+        @keyframes oradev-move-left {
+            0% { transform: translateX(0) rotate(720deg); }
+            100% { transform: translateX(-130px) rotate(720deg); }
+        }
+        
+        @keyframes oradev-text-slide {
+            0% { opacity: 0; transform: translateX(0) scale(0.5); letter-spacing: 20px; }
+            100% { opacity: 1; transform: translateX(60px) scale(1); letter-spacing: normal; }
         }
         
         /* Loading Animation */
@@ -106,6 +186,32 @@
             color: rgba(0, 0, 0, 0.7);
         }
         
+        /* Jumpscare Overlay */
+        #jumpscare-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .jumpscare-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            animation: jumpscareZoom 0.1s ease-out;
+        }
+        
+        @keyframes jumpscareZoom {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
         /* Header Controls */
         .header-controls {
             position: fixed;
@@ -163,7 +269,7 @@
             display: flex;
             width: 200%;
             height: 100%;
-            transition: transform 0.5s ease;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
         
         .slider-wrapper.slide-2 {
@@ -211,6 +317,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             margin-bottom: 2rem;
             transition: transform 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
         }
         
         .light-mode .profile-pic {
@@ -221,6 +328,7 @@
         .profile-pic:hover {
             transform: scale(1.05);
             border-color: #4a6cf7;
+            animation: glow 1.5s infinite ease-in-out;
         }
         
         .name {
@@ -282,6 +390,7 @@
         .role-tag:hover {
             background-color: rgba(74, 108, 247, 0.25);
             transform: translateY(-2px);
+            animation: float 0.6s ease-in-out;
         }
         
         /* Buttons Container */
@@ -314,6 +423,9 @@
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
         }
         
         .light-mode .btn {
@@ -327,6 +439,7 @@
             color: #121212;
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: pulse 0.3s ease, shake 0.5s ease;
         }
         
         .light-mode .btn:hover {
@@ -370,6 +483,10 @@
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.3s;
         }
         
         .light-mode .music-control-btn {
@@ -421,6 +538,8 @@
             max-height: 90%;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+            opacity: 0;
         }
         
         .light-mode .modal-content {
@@ -518,12 +637,18 @@
             font-size: 0.95rem;
             font-weight: 500;
             color: #fff;
+            transition: all 0.3s ease;
         }
         
         .light-mode .language-item {
             background-color: rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(0, 0, 0, 0.1);
             color: #121212;
+        }
+        
+        .language-item:hover {
+            transform: translateY(-2px);
+            background-color: rgba(74, 108, 247, 0.2);
         }
         
         /* Gallery Styles */
@@ -558,11 +683,12 @@
             border-radius: 5px;
             cursor: pointer;
             opacity: 0.6;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
         
         .gallery-thumbnail:hover, .gallery-thumbnail.active {
             opacity: 1;
+            transform: scale(1.1);
         }
         
         .close-gallery-btn {
@@ -740,6 +866,10 @@
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.5s;
         }
         
         .light-mode .slider-nav-btn {
@@ -771,6 +901,10 @@
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.4s;
         }
         
         .light-mode .slide-indicator {
@@ -792,6 +926,8 @@
             margin-bottom: 2rem;
             color: #4a6cf7;
             text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .apps-container {
@@ -818,6 +954,8 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             text-align: left;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .light-mode .app-btn {
@@ -872,6 +1010,8 @@
             margin-bottom: 1.5rem;
             color: #4a6cf7;
             text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .music-player-container {
@@ -899,6 +1039,8 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .light-mode .music-track {
@@ -990,6 +1132,8 @@
             justify-content: center;
             margin-top: 2rem;
             flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .request-btn {
@@ -1042,6 +1186,215 @@
             color: rgba(0, 0, 0, 0.7);
         }
         
+        /* NEW: Particle Container */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* NEW: Typing Effect */
+        .typing-effect {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .typing-effect::after {
+            content: '|';
+            position: absolute;
+            right: -5px;
+            top: 0;
+            color: #4a6cf7;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* NEW: Music Visualizer */
+        #music-visualizer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            z-index: -1;
+            opacity: 0.3;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .music-visualizer-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* NEW: Visualizer Toggle Button */
+        .visualizer-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 90px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.4s;
+        }
+        
+        .light-mode .visualizer-toggle-btn {
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        .visualizer-toggle-btn:hover {
+            transform: scale(1.1);
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .visualizer-toggle-btn.active {
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        /* NEW: Scroll Animation Class */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* NEW: Visualizer Modal */
+        .visualizer-modal-content {
+            width: 90%;
+            max-width: 800px;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .visualizer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .visualizer-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4a6cf7;
+        }
+        
+        .light-mode .visualizer-title {
+            color: #4a6cf7;
+        }
+        
+        .visualizer-canvas-container {
+            flex-grow: 1;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .fullscreen-visualizer {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .visualizer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .visualizer-mode-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .light-mode .visualizer-mode-select {
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        /* NEW: Particles Control Button */
+        .particles-control-btn {
+            position: fixed;
+            top: 20px;
+            right: 150px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.5s;
+        }
+        
+        .light-mode .particles-control-btn {
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #121212;
+        }
+        
+        .particles-control-btn:hover {
+            transform: scale(1.1);
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .particles-control-btn.active {
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -1057,6 +1410,36 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px #4a6cf7; }
+            50% { box-shadow: 0 0 20px #4a6cf7; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Enhanced Animations */
+        .theme-toggle {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.2s;
         }
         
         /* Responsive Design */
@@ -1184,6 +1567,43 @@
             .play-btn {
                 width: 35px;
                 height: 35px;
+            }
+            
+            /* NEW: Responsive visualizer controls */
+            .visualizer-toggle-btn {
+                top: 15px;
+                right: 75px;
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .particles-control-btn {
+                top: 15px;
+                right: 125px;
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            /* Oradev Intro Responsive */
+            .oradev-text {
+                font-size: 2.5rem;
+            }
+            
+            .oradev-logo-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            @keyframes oradev-move-left {
+                0% { transform: translateX(0) rotate(720deg); }
+                100% { transform: translateX(-100px) rotate(720deg); }
+            }
+            
+            @keyframes oradev-grow-logo {
+                0% { width: 100px; height: 100px; transform: translateX(0) rotate(720deg); }
+                100% { width: 120px; height: 120px; transform: translateX(0) rotate(720deg); }
             }
         }
         
@@ -1321,10 +1741,60 @@
                 max-width: 250px;
                 justify-content: center;
             }
+            
+            /* NEW: Mobile visualizer controls */
+            .visualizer-toggle-btn {
+                right: 70px;
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            
+            .particles-control-btn {
+                right: 115px;
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            
+            /* Oradev Intro Mobile */
+            .oradev-text {
+                font-size: 2rem;
+            }
+            
+            .oradev-logo-container {
+                width: 80px;
+                height: 80px;
+            }
+            
+            @keyframes oradev-move-left {
+                0% { transform: translateX(0) rotate(720deg); }
+                100% { transform: translateX(-80px) rotate(720deg); }
+            }
+            
+            @keyframes oradev-grow-logo {
+                0% { width: 80px; height: 80px; transform: translateX(0) rotate(720deg); }
+                100% { width: 100px; height: 100px; transform: translateX(0) rotate(720deg); }
+            }
+            
+            @keyframes oradev-text-slide {
+                0% { opacity: 0; transform: translateX(0) scale(0.5); letter-spacing: 15px; }
+                100% { opacity: 1; transform: translateX(40px) scale(1); letter-spacing: normal; }
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Oradev Intro -->
+    <div id="oradev-intro">
+        <div class="oradev-container">
+            <div class="oradev-logo-container">
+                <img src="logo.png" alt="Oradev Logo" class="oradev-logo">
+            </div>
+            <div class="oradev-text">ORADEV</div>
+        </div>
+    </div>
+    
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loading-container">
@@ -1337,9 +1807,32 @@
         </div>
     </div>
     
+    <!-- Jumpscare Overlay -->
+    <div id="jumpscare-overlay">
+        <img src="jumpscare.jpeg" alt="Jumpscare" class="jumpscare-image">
+    </div>
+    
+    <!-- NEW: Particles Container -->
+    <div id="particles-js"></div>
+    
+    <!-- NEW: Music Visualizer -->
+    <div id="music-visualizer">
+        <canvas class="music-visualizer-canvas" id="visualizer-canvas"></canvas>
+    </div>
+    
     <!-- Theme Toggle -->
     <button class="control-btn theme-toggle" id="theme-toggle">
         <i class="fas fa-moon"></i>
+    </button>
+    
+    <!-- NEW: Particles Control Button -->
+    <button class="particles-control-btn" id="particles-toggle">
+        <i class="fas fa-star"></i>
+    </button>
+    
+    <!-- NEW: Visualizer Control Button -->
+    <button class="visualizer-toggle-btn" id="visualizer-toggle">
+        <i class="fas fa-wave-square"></i>
     </button>
     
     <!-- Music Controls -->
@@ -1376,10 +1869,10 @@
                         <h1 class="welcome-text">Oi lek, selamat datang di website ku</h1>
                         <h1 class="name">Al'Majid</h1>
                         
-                        <!-- Bio dengan Vibecoding -->
+                        <!-- NEW: Bio dengan Typing Effect -->
                         <p class="bio">
                             <i class="fas fa-code bio-icon"></i>
-                            Website Programming | UI/UX Designer | Vibecoding
+                            <span class="typing-effect" id="typing-text"></span>
                         </p>
                         
                         <!-- Roles Container -->
@@ -1474,6 +1967,12 @@
                             <i class="fas fa-images"></i>
                             <span class="btn-text">Gallery</span>
                         </button>
+                        
+                        <!-- NEW: Visualizer Button -->
+                        <button class="btn" id="visualizer-fullscreen-btn">
+                            <i class="fas fa-expand"></i>
+                            <span class="btn-text">Fullscreen Visualizer</span>
+                        </button>
                     </div>
                     
                     <div class="footer">
@@ -1487,14 +1986,14 @@
                 <main class="content">
                     <section class="profile-section">
                         <h1 class="slide-2-title">Tools & Features</h1>
-                        <p class="bio">Akses aplikasi dan fitur menarik lainnya</p>
+                        <p class="bio scroll-reveal">Akses aplikasi dan fitur menarik lainnya</p>
                     </section>
                     
                     <div class="slide-2-content">
                         <!-- Apps Container -->
                         <div class="apps-container">
                             <!-- 3 Tombol Utama -->
-                            <a href="https://kalkulator-one-beta.vercel.app/" class="app-btn" target="_blank">
+                            <a href="https://kalkulator-one-beta.vercel.app/" class="app-btn scroll-reveal" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-calculator"></i>
                                 </div>
@@ -1504,7 +2003,7 @@
                                 </div>
                             </a>
                             
-                            <a href="https://notepad-lake-tau.vercel.app/" class="app-btn" target="_blank">
+                            <a href="https://notepad-lake-tau.vercel.app/" class="app-btn scroll-reveal" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-sticky-note"></i>
                                 </div>
@@ -1514,7 +2013,7 @@
                                 </div>
                             </a>
                             
-                            <a href="https://photobooth-beta-steel.vercel.app/" class="app-btn" target="_blank">
+                            <a href="https://photobooth-beta-steel.vercel.app/" class="app-btn scroll-reveal" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-camera"></i>
                                 </div>
@@ -1524,28 +2023,29 @@
                                 </div>
                             </a>
                             
-                            <!-- 3 Tombol Coming Soon -->
-                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                            <!-- NEW: 2 Tombol Embed dari iframe -->
+                            <button class="app-btn scroll-reveal" id="deepseek-embed-btn">
                                 <div class="app-icon">
-                                    <i class="fas fa-clock"></i>
+                                    <i class="fas fa-robot"></i>
                                 </div>
                                 <div class="app-text">
-                                    <div class="app-title">Coming Soon</div>
-                                    <div class="app-desc">Fitur menarik sedang dalam pengembangan</div>
+                                    <div class="app-title">DeepSeek AI Chat</div>
+                                    <div class="app-desc">Chat dengan AI canggih langsung di website</div>
                                 </div>
-                            </a>
+                            </button>
                             
-                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                            <button class="app-btn scroll-reveal" id="youtube-embed-btn">
                                 <div class="app-icon">
-                                    <i class="fas fa-clock"></i>
+                                    <i class="fab fa-youtube"></i>
                                 </div>
                                 <div class="app-text">
-                                    <div class="app-title">Coming Soon</div>
-                                    <div class="app-desc">Fitur menarik sedang dalam pengembangan</div>
+                                    <div class="app-title">YouTube Player</div>
+                                    <div class="app-desc">Nonton YouTube langsung di website</div>
                                 </div>
-                            </a>
+                            </button>
                             
-                            <a href="Link Website Isi Disini" class="app-btn" target="_blank">
+                            <!-- Satu tombol Coming Soon tetap -->
+                            <a href="Link Website Isi Disini" class="app-btn scroll-reveal" target="_blank">
                                 <div class="app-icon">
                                     <i class="fas fa-clock"></i>
                                 </div>
@@ -1558,14 +2058,14 @@
                         
                         <!-- Music Player Section -->
                         <div class="music-section">
-                            <h2 class="music-section-title">Music For You</h2>
+                            <h2 class="music-section-title scroll-reveal">Music For You</h2>
                             
                             <div class="music-player-container" id="music-player-container">
                                 <!-- Music tracks akan ditambahkan secara dinamis -->
                             </div>
                             
                             <!-- Request Buttons -->
-                            <div class="request-buttons">
+                            <div class="request-buttons scroll-reveal">
                                 <button class="request-btn" id="request-music-btn">
                                     <i class="fab fa-whatsapp"></i>
                                     <span>Minta Tambahin Musikmu</span>
@@ -1579,7 +2079,7 @@
                         </div>
                     </div>
                     
-                    <div class="footer">
+                    <div class="footer scroll-reveal">
                         <p>&copy; 2025 Al'Majid. All rights reserved. | Slide 2: Tools & Features</p>
                     </div>
                 </main>
@@ -1762,11 +2262,108 @@
         </div>
     </div>
     
+    <!-- NEW: Fullscreen Visualizer Modal -->
+    <div class="modal" id="visualizer-modal">
+        <div class="modal-content visualizer-modal-content">
+            <div class="visualizer-header">
+                <h2 class="visualizer-title">Music Visualizer</h2>
+                <button class="close-modal" id="close-visualizer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="visualizer-canvas-container">
+                <canvas class="fullscreen-visualizer" id="fullscreen-visualizer"></canvas>
+            </div>
+            <div class="visualizer-controls">
+                <div>
+                    <select class="visualizer-mode-select" id="visualizer-mode-select">
+                        <option value="bars">Bars</option>
+                        <option value="circle">Circle</option>
+                        <option value="wave">Wave</option>
+                        <option value="particles">Particles</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="request-btn" id="visualizer-color-btn">
+                        <i class="fas fa-palette"></i>
+                        <span>Change Color</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: DeepSeek Embed Modal -->
+    <div class="modal" id="deepseek-embed-modal">
+        <div class="modal-content" style="width: 95%; max-width: 1200px; height: 85vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">DeepSeek AI Chat</h2>
+                <button class="close-modal" id="close-deepseek">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="width: 100%; height: 80%;">
+                <iframe 
+                    src="https://chat.deepseek.com/" 
+                    style="width: 100%; height: 100%; border: none; border-radius: 10px;"
+                    allow="fullscreen"
+                    title="DeepSeek AI Chat">
+                </iframe>
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">
+                    Powered by DeepSeek AI | Chat langsung dengan AI canggih
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: YouTube Embed Modal -->
+    <div class="modal" id="youtube-embed-modal">
+        <div class="modal-content" style="width: 95%; max-width: 1200px; height: 85vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">YouTube Player</h2>
+                <button class="close-modal" id="close-youtube">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="width: 100%; height: 80%;">
+                <iframe 
+                    src="https://www.youtube.com/embed?listType=search&list=" 
+                    style="width: 100%; height: 100%; border: none; border-radius: 10px;"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    title="YouTube Player">
+                </iframe>
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <input type="text" id="youtube-search" placeholder="Cari video YouTube..." style="flex-grow: 1; max-width: 400px; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white;">
+                    <button class="request-btn" id="youtube-search-btn">
+                        <i class="fas fa-search"></i>
+                        <span>Search</span>
+                    </button>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 1rem;">
+                    Cari dan tonton video YouTube langsung di website
+                </p>
+            </div>
+        </div>
+    </div>
+    
     <!-- Background Music -->
     <audio id="background-music" loop>
         <source src="musik.mp3" type="audio/mpeg">
         <source src="musik.ogg" type="audio/ogg">
     </audio>
+    
+    <!-- Jumpscare Sound -->
+    <audio id="jumpscare-sound">
+        <source src="jumpscare.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- NEW: Particle.js Library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     
     <script>
         // DOM Elements
@@ -1804,7 +2401,11 @@
         const galleryNav = document.getElementById('gallery-nav');
         const backgroundMusic = document.getElementById('background-music');
         
-        // New DOM Elements for Slide 2
+        // New DOM Elements
+        const oradevIntro = document.getElementById('oradev-intro');
+        const jumpscareOverlay = document.getElementById('jumpscare-overlay');
+        const jumpscareImage = jumpscareOverlay.querySelector('.jumpscare-image');
+        const jumpscareSound = document.getElementById('jumpscare-sound');
         const sliderWrapper = document.getElementById('slider-wrapper');
         const slide1Btn = document.getElementById('slide-1-btn');
         const slide2Btn = document.getElementById('slide-2-btn');
@@ -1818,6 +2419,26 @@
         const galleryRequestMessage = document.getElementById('gallery-request-message');
         const galleryRequestNav = document.getElementById('gallery-request-nav');
         
+        // NEW: Upgrade DOM Elements
+        const particlesToggle = document.getElementById('particles-toggle');
+        const visualizerToggle = document.getElementById('visualizer-toggle');
+        const visualizerCanvas = document.getElementById('visualizer-canvas');
+        const visualizerFullscreenBtn = document.getElementById('visualizer-fullscreen-btn');
+        const visualizerModal = document.getElementById('visualizer-modal');
+        const closeVisualizerBtn = document.getElementById('close-visualizer');
+        const fullscreenVisualizer = document.getElementById('fullscreen-visualizer');
+        const visualizerModeSelect = document.getElementById('visualizer-mode-select');
+        const visualizerColorBtn = document.getElementById('visualizer-color-btn');
+        const typingText = document.getElementById('typing-text');
+        const deepseekEmbedBtn = document.getElementById('deepseek-embed-btn');
+        const youtubeEmbedBtn = document.getElementById('youtube-embed-btn');
+        const deepseekEmbedModal = document.getElementById('deepseek-embed-modal');
+        const youtubeEmbedModal = document.getElementById('youtube-embed-modal');
+        const closeDeepseekBtn = document.getElementById('close-deepseek');
+        const closeYoutubeBtn = document.getElementById('close-youtube');
+        const youtubeSearchInput = document.getElementById('youtube-search');
+        const youtubeSearchBtn = document.getElementById('youtube-search-btn');
+        
         // State variables
         let isDarkMode = true;
         let isMusicPlaying = false;
@@ -1827,6 +2448,24 @@
         let currentSlide = 1;
         let currentPlayingTrack = null;
         let audioElements = {};
+        
+        // NEW: Upgrade State Variables
+        let particlesActive = true;
+        let visualizerActive = false;
+        let visualizerFullscreen = false;
+        let audioContext = null;
+        let audioAnalyser = null;
+        let audioSource = null;
+        let visualizerAnimationId = null;
+        let currentVisualizerMode = 'bars';
+        let visualizerColorIndex = 0;
+        const visualizerColors = ['#4a6cf7', '#ff4757', '#2ed573', '#ffa502', '#ff6b81', '#1e90ff', '#ff6348'];
+        let typingTextIndex = 0;
+        let typingTextArray = ['Website Programming | UI/UX Designer | Vibecoding', 'Creating beautiful and functional web experiences', 'Passionate about coding and design'];
+        let typingTextCurrent = 0;
+        let typingCharIndex = 0;
+        let isTypingDeleting = false;
+        let typingSpeed = 100;
         
         // Music tracks data - DETECT MANUALLY ONE BY ONE
         const musicTracks = [
@@ -1992,6 +2631,461 @@
             }
         ];
         
+        // NEW: Initialize Particles.js
+        function initParticles() {
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: {
+                            value: 80,
+                            density: {
+                                enable: true,
+                                value_area: 800
+                            }
+                        },
+                        color: {
+                            value: "#4a6cf7"
+                        },
+                        shape: {
+                            type: "circle",
+                            stroke: {
+                                width: 0,
+                                color: "#000000"
+                            }
+                        },
+                        opacity: {
+                            value: 0.5,
+                            random: true,
+                            anim: {
+                                enable: true,
+                                speed: 1,
+                                opacity_min: 0.1,
+                                sync: false
+                            }
+                        },
+                        size: {
+                            value: 3,
+                            random: true,
+                            anim: {
+                                enable: true,
+                                speed: 2,
+                                size_min: 0.1,
+                                sync: false
+                            }
+                        },
+                        line_linked: {
+                            enable: true,
+                            distance: 150,
+                            color: "#4a6cf7",
+                            opacity: 0.2,
+                            width: 1
+                        },
+                        move: {
+                            enable: true,
+                            speed: 1,
+                            direction: "none",
+                            random: true,
+                            straight: false,
+                            out_mode: "out",
+                            bounce: false,
+                            attract: {
+                                enable: false,
+                                rotateX: 600,
+                                rotateY: 1200
+                            }
+                        }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onhover: {
+                                enable: true,
+                                mode: "grab"
+                            },
+                            onclick: {
+                                enable: true,
+                                mode: "push"
+                            },
+                            resize: true
+                        },
+                        modes: {
+                            grab: {
+                                distance: 140,
+                                line_linked: {
+                                    opacity: 0.3
+                                }
+                            },
+                            bubble: {
+                                distance: 400,
+                                size: 40,
+                                duration: 2,
+                                opacity: 8,
+                                speed: 3
+                            },
+                            repulse: {
+                                distance: 200,
+                                duration: 0.4
+                            },
+                            push: {
+                                particles_nb: 4
+                            },
+                            remove: {
+                                particles_nb: 2
+                            }
+                        }
+                    },
+                    retina_detect: true
+                });
+            }
+        }
+        
+        // NEW: Toggle Particles
+        function toggleParticles() {
+            particlesActive = !particlesActive;
+            const particlesContainer = document.getElementById('particles-js');
+            
+            if (particlesActive) {
+                particlesContainer.style.display = 'block';
+                particlesToggle.classList.add('active');
+                particlesToggle.innerHTML = '<i class="fas fa-star"></i>';
+            } else {
+                particlesContainer.style.display = 'none';
+                particlesToggle.classList.remove('active');
+                particlesToggle.innerHTML = '<i class="far fa-star"></i>';
+            }
+        }
+        
+        // NEW: Initialize Typing Effect
+        function initTypingEffect() {
+            function type() {
+                const currentText = typingTextArray[typingTextCurrent];
+                
+                if (!isTypingDeleting && typingCharIndex < currentText.length) {
+                    typingText.textContent = currentText.substring(0, typingCharIndex + 1);
+                    typingCharIndex++;
+                    typingSpeed = 100;
+                } else if (isTypingDeleting && typingCharIndex > 0) {
+                    typingText.textContent = currentText.substring(0, typingCharIndex - 1);
+                    typingCharIndex--;
+                    typingSpeed = 50;
+                }
+                
+                if (!isTypingDeleting && typingCharIndex === currentText.length) {
+                    isTypingDeleting = true;
+                    typingSpeed = 1500; // Pause at the end
+                } else if (isTypingDeleting && typingCharIndex === 0) {
+                    isTypingDeleting = false;
+                    typingTextCurrent = (typingTextCurrent + 1) % typingTextArray.length;
+                    typingSpeed = 500; // Pause before starting new text
+                }
+                
+                setTimeout(type, typingSpeed);
+            }
+            
+            // Start typing effect
+            setTimeout(type, 1000);
+        }
+        
+        // NEW: Initialize Scroll Reveal
+        function initScrollReveal() {
+            const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+            
+            function checkScroll() {
+                scrollRevealElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('revealed');
+                    }
+                });
+            }
+            
+            // Check on load and scroll
+            window.addEventListener('load', checkScroll);
+            window.addEventListener('scroll', checkScroll);
+            
+            // Initial check
+            checkScroll();
+        }
+        
+        // NEW: Initialize Music Visualizer
+        function initVisualizer() {
+            // Create audio context if not exists
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioAnalyser = audioContext.createAnalyser();
+                audioAnalyser.fftSize = 256;
+            }
+            
+            // Get canvas contexts
+            const canvas = visualizerCanvas;
+            const canvasCtx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            const fullCanvas = fullscreenVisualizer;
+            const fullCanvasCtx = fullCanvas.getContext('2d');
+            fullCanvas.width = fullCanvas.offsetWidth;
+            fullCanvas.height = fullCanvas.offsetHeight;
+            
+            // Visualizer data array
+            const bufferLength = audioAnalyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            // Draw function
+            function drawVisualizer() {
+                if (!visualizerActive && !visualizerFullscreen) return;
+                
+                // Get canvas context based on mode
+                const ctx = visualizerFullscreen ? fullCanvasCtx : canvasCtx;
+                const currentCanvas = visualizerFullscreen ? fullCanvas : canvas;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
+                
+                // Get frequency data
+                audioAnalyser.getByteFrequencyData(dataArray);
+                
+                // Draw based on mode
+                switch (currentVisualizerMode) {
+                    case 'bars':
+                        drawBars(ctx, currentCanvas, dataArray, bufferLength);
+                        break;
+                    case 'circle':
+                        drawCircle(ctx, currentCanvas, dataArray, bufferLength);
+                        break;
+                    case 'wave':
+                        drawWave(ctx, currentCanvas, dataArray, bufferLength);
+                        break;
+                    case 'particles':
+                        drawParticles(ctx, currentCanvas, dataArray, bufferLength);
+                        break;
+                }
+                
+                visualizerAnimationId = requestAnimationFrame(drawVisualizer);
+            }
+            
+            // Draw bars visualizer
+            function drawBars(ctx, canvas, dataArray, bufferLength) {
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] * (canvas.height / 256);
+                    
+                    const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+                    gradient.addColorStop(0, visualizerColors[visualizerColorIndex]);
+                    gradient.addColorStop(1, visualizerColors[(visualizerColorIndex + 1) % visualizerColors.length]);
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    
+                    x += barWidth + 1;
+                }
+            }
+            
+            // Draw circle visualizer
+            function drawCircle(ctx, canvas, dataArray, bufferLength) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(canvas.width, canvas.height) / 4;
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(74, 108, 247, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const angle = (i * 2 * Math.PI) / bufferLength;
+                    const value = dataArray[i];
+                    const pointRadius = radius + (value * 0.5);
+                    
+                    const x = centerX + Math.cos(angle) * pointRadius;
+                    const y = centerY + Math.sin(angle) * pointRadius;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                    ctx.fillStyle = visualizerColors[visualizerColorIndex];
+                    ctx.fill();
+                }
+            }
+            
+            // Draw wave visualizer
+            function drawWave(ctx, canvas, dataArray, bufferLength) {
+                ctx.beginPath();
+                
+                const sliceWidth = canvas.width * 1.0 / bufferLength;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * canvas.height / 2;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.strokeStyle = visualizerColors[visualizerColorIndex];
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // Draw particles visualizer
+            function drawParticles(ctx, canvas, dataArray, bufferLength) {
+                const particles = [];
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const value = dataArray[Math.floor(i * bufferLength / particleCount)];
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        size: value * 0.05,
+                        speedX: (Math.random() - 0.5) * 2,
+                        speedY: (Math.random() - 0.5) * 2
+                    });
+                }
+                
+                particles.forEach(particle => {
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+                    
+                    // Bounce off walls
+                    if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = visualizerColors[visualizerColorIndex];
+                    ctx.fill();
+                });
+            }
+            
+            // Start visualizer
+            function startVisualizer() {
+                if (visualizerAnimationId) {
+                    cancelAnimationFrame(visualizerAnimationId);
+                }
+                drawVisualizer();
+            }
+            
+            // Connect audio source to analyser
+            function connectAudioSource(audioElement) {
+                if (audioSource) {
+                    audioSource.disconnect();
+                }
+                
+                audioSource = audioContext.createMediaElementSource(audioElement);
+                audioSource.connect(audioAnalyser);
+                audioAnalyser.connect(audioContext.destination);
+                
+                startVisualizer();
+            }
+            
+            // Toggle visualizer
+            function toggleVisualizer() {
+                visualizerActive = !visualizerActive;
+                
+                if (visualizerActive) {
+                    visualizerToggle.classList.add('active');
+                    visualizerToggle.innerHTML = '<i class="fas fa-wave-square"></i>';
+                    document.getElementById('music-visualizer').style.display = 'block';
+                    
+                    // Connect to background music if playing
+                    if (isMusicPlaying) {
+                        connectAudioSource(backgroundMusic);
+                    } else if (currentPlayingTrack && audioElements[currentPlayingTrack]) {
+                        connectAudioSource(audioElements[currentPlayingTrack]);
+                    }
+                    
+                    startVisualizer();
+                } else {
+                    visualizerToggle.classList.remove('active');
+                    visualizerToggle.innerHTML = '<i class="fas fa-wave-square"></i>';
+                    document.getElementById('music-visualizer').style.display = 'none';
+                    
+                    if (visualizerAnimationId) {
+                        cancelAnimationFrame(visualizerAnimationId);
+                    }
+                }
+            }
+            
+            // Change visualizer color
+            function changeVisualizerColor() {
+                visualizerColorIndex = (visualizerColorIndex + 1) % visualizerColors.length;
+            }
+            
+            // Change visualizer mode
+            function changeVisualizerMode(mode) {
+                currentVisualizerMode = mode;
+                if (visualizerActive || visualizerFullscreen) {
+                    startVisualizer();
+                }
+            }
+            
+            // Open fullscreen visualizer
+            function openFullscreenVisualizer() {
+                visualizerFullscreen = true;
+                openModal(visualizerModal);
+                
+                // Resize canvas
+                fullscreenVisualizer.width = fullscreenVisualizer.offsetWidth;
+                fullscreenVisualizer.height = fullscreenVisualizer.offsetHeight;
+                
+                // Connect audio source
+                if (isMusicPlaying) {
+                    connectAudioSource(backgroundMusic);
+                } else if (currentPlayingTrack && audioElements[currentPlayingTrack]) {
+                    connectAudioSource(audioElements[currentPlayingTrack]);
+                }
+                
+                startVisualizer();
+            }
+            
+            // Close fullscreen visualizer
+            function closeFullscreenVisualizer() {
+                visualizerFullscreen = false;
+                closeModal(visualizerModal);
+                
+                if (visualizerAnimationId) {
+                    cancelAnimationFrame(visualizerAnimationId);
+                }
+                
+                // Restart regular visualizer if active
+                if (visualizerActive) {
+                    startVisualizer();
+                }
+            }
+            
+            // Event listeners
+            visualizerToggle.addEventListener('click', toggleVisualizer);
+            visualizerFullscreenBtn.addEventListener('click', openFullscreenVisualizer);
+            visualizerColorBtn.addEventListener('click', changeVisualizerColor);
+            visualizerModeSelect.addEventListener('change', (e) => {
+                changeVisualizerMode(e.target.value);
+            });
+            
+            // Return public methods
+            return {
+                connectAudioSource,
+                toggleVisualizer,
+                openFullscreenVisualizer,
+                closeFullscreenVisualizer
+            };
+        }
+        
+        // NEW: Connect audio to visualizer when playing
+        const visualizer = initVisualizer();
+        
         // Loading Animation dengan persentase 0-100%
         function simulateLoading() {
             const interval = setInterval(() => {
@@ -2010,8 +3104,8 @@
                         loadingScreen.style.opacity = '0';
                         loadingScreen.style.visibility = 'hidden';
                         
-                        // Initialize music tracks after loading
-                        initMusicTracks();
+                        // Tampilkan Oradev intro
+                        showOradevIntro();
                     }, 500);
                 } else {
                     // Update persentase dan progress bar
@@ -2021,33 +3115,133 @@
             }, 100);
         }
         
-        // Initialize loading on page load
-        window.addEventListener('load', function() {
-            // Mulai loading simulation
-            simulateLoading();
+        // Show Oradev Intro
+        function showOradevIntro() {
+            // Jalankan animasi untuk logo
+            const logoContainer = document.querySelector('.oradev-logo-container');
+            const oradevText = document.querySelector('.oradev-text');
             
-            // Handle profile image
-            profileImg.onerror = function() {
-                const name = 'Al Majid';
-                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=4a6cf7&color=fff&size=400&bold=true`;
+            logoContainer.style.animation = 'oradev-roll-in 1.2s ease-out forwards, oradev-return-center .6s 1.2s ease-in-out forwards, oradev-grow-logo .8s 1.8s ease-out forwards, oradev-move-left .5s 2.6s ease-out forwards';
+            oradevText.style.animation = 'oradev-text-slide 1s 2.6s ease-out forwards';
+            
+            // Handle logo error
+            const logoImg = document.querySelector('.oradev-logo');
+            logoImg.onerror = function() {
+                this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><circle cx="60" cy="60" r="60" fill="%23ffd700"/></svg>';
             };
             
-            // Try alternative image formats
-            const profileFormats = ['profil.jpg', 'profil.webp', 'profil.png', 'profil.jpeg'];
-            let currentFormatIndex = 0;
+            // Add jumpscare to logo
+            logoImg.addEventListener('click', triggerJumpscare);
             
-            function tryNextProfileFormat() {
-                if (currentFormatIndex < profileFormats.length) {
-                    profileImg.src = profileFormats[currentFormatIndex];
-                    currentFormatIndex++;
+            // Sembunyikan Oradev intro setelah animasi selesai
+            setTimeout(() => {
+                oradevIntro.classList.add('fade-out');
+                
+                // Tampilkan konten utama
+                setTimeout(() => {
+                    oradevIntro.style.display = 'none';
+                    
+                    // Initialize music tracks setelah intro selesai
+                    initMusicTracks();
+                    
+                    // Animate elements with delay
+                    animateElements();
+                    
+                    // NEW: Initialize features after intro
+                    initParticles();
+                    initTypingEffect();
+                    initScrollReveal();
+                }, 800);
+            }, 4000);
+        }
+        
+        // Animate elements with staggered delays
+        function animateElements() {
+            // Animate buttons with staggered delays
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach((btn, index) => {
+                setTimeout(() => {
+                    btn.style.animation = `fadeInUp 0.8s ease forwards`;
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                }, 100 + (index * 50));
+            });
+            
+            // Animate other elements
+            const elementsToAnimate = [
+                { selector: '.theme-toggle', delay: 200 },
+                { selector: '.music-control-btn', delay: 300 },
+                { selector: '.slider-nav-btn', delay: 400 },
+                { selector: '.slide-indicator', delay: 500 },
+                { selector: '.particles-control-btn', delay: 600 },
+                { selector: '.visualizer-toggle-btn', delay: 700 }
+            ];
+            
+            elementsToAnimate.forEach(item => {
+                const element = document.querySelector(item.selector);
+                if (element) {
+                    setTimeout(() => {
+                        element.style.animation = `fadeInUp 0.8s ease forwards`;
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }, item.delay);
                 }
+            });
+            
+            // Animate slide 2 elements if on slide 2
+            if (currentSlide === 2) {
+                animateSlide2Elements();
+            }
+        }
+        
+        // Animate Slide 2 elements
+        function animateSlide2Elements() {
+            const slide2Title = document.querySelector('.slide-2-title');
+            const appBtns = document.querySelectorAll('.app-btn');
+            const musicSectionTitle = document.querySelector('.music-section-title');
+            const musicTracks = document.querySelectorAll('.music-track');
+            const requestButtons = document.querySelector('.request-buttons');
+            
+            if (slide2Title) {
+                setTimeout(() => {
+                    slide2Title.style.animation = 'fadeInUp 0.8s ease forwards';
+                    slide2Title.style.opacity = '1';
+                    slide2Title.style.transform = 'translateY(0)';
+                }, 300);
             }
             
-            profileImg.onerror = tryNextProfileFormat;
+            appBtns.forEach((btn, index) => {
+                setTimeout(() => {
+                    btn.style.animation = 'fadeInUp 0.8s ease forwards';
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                }, 400 + (index * 100));
+            });
             
-            // Cek apakah file musik ada
-            checkMusicFile();
-        });
+            if (musicSectionTitle) {
+                setTimeout(() => {
+                    musicSectionTitle.style.animation = 'fadeInUp 0.8s ease forwards';
+                    musicSectionTitle.style.opacity = '1';
+                    musicSectionTitle.style.transform = 'translateY(0)';
+                }, 1000);
+            }
+            
+            musicTracks.forEach((track, index) => {
+                setTimeout(() => {
+                    track.style.animation = 'fadeInUp 0.8s ease forwards';
+                    track.style.opacity = '1';
+                    track.style.transform = 'translateY(0)';
+                }, 1100 + (index * 100));
+            });
+            
+            if (requestButtons) {
+                setTimeout(() => {
+                    requestButtons.style.animation = 'fadeInUp 0.8s ease forwards';
+                    requestButtons.style.opacity = '1';
+                    requestButtons.style.transform = 'translateY(0)';
+                }, 2100);
+            }
+        }
         
         // Initialize music tracks
         function initMusicTracks() {
@@ -2194,6 +3388,11 @@
                         playButton.classList.add('playing');
                         playButton.innerHTML = '<i class="fas fa-pause"></i>';
                         currentPlayingTrack = trackId;
+                        
+                        // NEW: Connect to visualizer
+                        if (visualizerActive || visualizerFullscreen) {
+                            visualizer.connectAudioSource(audio);
+                        }
                     }).catch(error => {
                         console.log("Autoplay prevented for track:", error);
                         // Show message to user
@@ -2236,6 +3435,37 @@
                 }
                 currentPlayingTrack = null;
             }
+        }
+        
+        // Jumpscare function
+        function triggerJumpscare() {
+            // Hentikan semua musik
+            stopAllMusic();
+            
+            // Tampilkan jumpscare overlay
+            jumpscareOverlay.style.display = 'flex';
+            
+            // Load jumpscare image dengan fallback
+            jumpscareImage.onerror = function() {
+                this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="%23000"/><text x="200" y="200" text-anchor="middle" fill="red" font-family="Arial" font-size="40" font-weight="bold">BOO!</text></svg>';
+            };
+            
+            // Mainkan suara jumpscare
+            jumpscareSound.currentTime = 0;
+            const playPromise = jumpscareSound.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay prevented for jumpscare sound");
+                });
+            }
+            
+            // Sembunyikan setelah 5 detik
+            setTimeout(() => {
+                jumpscareOverlay.style.display = 'none';
+                jumpscareSound.pause();
+                jumpscareSound.currentTime = 0;
+            }, 5000);
         }
         
         // Theme Toggle
@@ -2298,6 +3528,11 @@
                         musicControl.classList.add('playing');
                         musicControl.innerHTML = '<i class="fas fa-volume-up"></i>';
                         
+                        // NEW: Connect to visualizer
+                        if (visualizerActive || visualizerFullscreen) {
+                            visualizer.connectAudioSource(backgroundMusic);
+                        }
+                        
                         // Tampilkan status
                         musicStatus.textContent = 'Musik dinyalakan';
                         musicStatus.classList.add('show');
@@ -2339,6 +3574,17 @@
                 slide1Btn.classList.remove('active');
                 slide2Btn.classList.add('active');
                 slideIndicator.textContent = 'Slide 2/2';
+                
+                // Animate elements on slide 2
+                setTimeout(animateSlide2Elements, 300);
+                
+                // NEW: Trigger scroll reveal on slide 2
+                setTimeout(() => {
+                    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+                    scrollRevealElements.forEach(element => {
+                        element.classList.add('revealed');
+                    });
+                }, 500);
             }
         }
         
@@ -2430,6 +3676,15 @@
         function openModal(modal) {
             modal.style.display = 'flex';
             stopAllMusic();
+            
+            // Animate modal content
+            setTimeout(() => {
+                const modalContent = modal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.style.animation = 'fadeInUp 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards';
+                    modalContent.style.opacity = '1';
+                }
+            }, 10);
         }
         
         function closeModal(modal) {
@@ -2634,6 +3889,26 @@
         // Favorite Musician Button
         favoriteMusicianBtn.addEventListener('click', () => openModal(favoriteMusicianModal));
         
+        // NEW: Embed Buttons
+        deepseekEmbedBtn.addEventListener('click', () => openModal(deepseekEmbedModal));
+        youtubeEmbedBtn.addEventListener('click', () => openModal(youtubeEmbedModal));
+        
+        // NEW: YouTube Search Functionality
+        youtubeSearchBtn.addEventListener('click', () => {
+            const searchTerm = youtubeSearchInput.value.trim();
+            if (searchTerm) {
+                const encodedSearch = encodeURIComponent(searchTerm);
+                const iframe = youtubeEmbedModal.querySelector('iframe');
+                iframe.src = `https://www.youtube.com/embed?listType=search&list=${encodedSearch}`;
+            }
+        });
+        
+        youtubeSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                youtubeSearchBtn.click();
+            }
+        });
+        
         // Setup modal close events
         setupModalClose(favsongModal, closeFavsongBtn);
         setupModalClose(programmingModal, closeProgrammingBtn);
@@ -2641,9 +3916,18 @@
         setupModalClose(favoriteMusicianModal, closeFavoriteMusicianBtn);
         setupModalClose(galleryModal, closeGalleryBtn);
         setupModalClose(galleryRequestModal, closeGalleryRequestBtn);
+        setupModalClose(visualizerModal, closeVisualizerBtn);
+        setupModalClose(deepseekEmbedModal, closeDeepseekBtn);
+        setupModalClose(youtubeEmbedModal, closeYoutubeBtn);
         
         closeGalleryBtn2.addEventListener('click', () => closeModal(galleryModal));
         closeGalleryRequestBtn2.addEventListener('click', () => closeModal(galleryRequestModal));
+        
+        // NEW: Particles Toggle
+        particlesToggle.addEventListener('click', toggleParticles);
+        
+        // Add jumpscare event to profile image
+        profileImg.addEventListener('click', triggerJumpscare);
         
         // Add hover effect to all buttons
         document.querySelectorAll('.btn').forEach(button => {
@@ -2689,6 +3973,47 @@
             button.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0)';
             });
+        });
+        
+        // Initialize loading on page load
+        window.addEventListener('load', function() {
+            // Mulai loading simulation
+            simulateLoading();
+            
+            // Handle profile image
+            profileImg.onerror = function() {
+                const name = 'Al Majid';
+                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=4a6cf7&color=fff&size=400&bold=true`;
+            };
+            
+            // Try alternative image formats
+            const profileFormats = ['profil.jpg', 'profil.webp', 'profil.png', 'profil.jpeg'];
+            let currentFormatIndex = 0;
+            
+            function tryNextProfileFormat() {
+                if (currentFormatIndex < profileFormats.length) {
+                    profileImg.src = profileFormats[currentFormatIndex];
+                    currentFormatIndex++;
+                }
+            }
+            
+            profileImg.onerror = tryNextProfileFormat;
+            
+            // Cek apakah file musik ada
+            checkMusicFile();
+        });
+        
+        // NEW: Handle window resize for visualizer
+        window.addEventListener('resize', () => {
+            if (visualizerCanvas) {
+                visualizerCanvas.width = visualizerCanvas.offsetWidth;
+                visualizerCanvas.height = visualizerCanvas.offsetHeight;
+            }
+            
+            if (fullscreenVisualizer && visualizerFullscreen) {
+                fullscreenVisualizer.width = fullscreenVisualizer.offsetWidth;
+                fullscreenVisualizer.height = fullscreenVisualizer.offsetHeight;
+            }
         });
     </script>
 </body>
