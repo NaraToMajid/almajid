@@ -356,7 +356,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: none;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -455,7 +455,7 @@
             background-color: #4a6cf7;
             color: white;
             font-size: 1.5rem;
-            cursor: none;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -790,7 +790,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: none;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -983,7 +983,7 @@
             font-weight: 500;
             text-decoration: none;
             transition: all 0.3s ease;
-            cursor: none;
+            cursor: pointer;
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
@@ -1429,7 +1429,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: none;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -4493,6 +4493,21 @@
                 </button>
             </div>
             <div class="video-call-container">
+                <div style="margin-bottom: 1rem; text-align: center;">
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
+                        <input type="text" id="room-id-input" placeholder="Masukkan Room ID" style="padding: 0.5rem; border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; width: 200px;">
+                        <button class="call-btn" id="join-room-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-sign-in-alt"></i> Join
+                        </button>
+                    </div>
+                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">
+                        Room ID Anda: <span id="current-room-id" style="color: #4a6cf7; font-weight: bold;"></span>
+                        <button id="copy-room-id" style="margin-left: 10px; background: none; border: none; color: #4a6cf7; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="video-grid" id="video-grid">
                     <div class="video-item">
                         <video id="local-video" autoplay muted class="video-player"></video>
@@ -4501,7 +4516,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="call-controls">
                     <button class="call-btn" id="toggle-mic">
                         <i class="fas fa-microphone"></i>
@@ -4737,6 +4752,10 @@
         // NEW: Video Conference Elements
         const videoConferenceModal = document.getElementById('video-conference-modal');
         const closeVideoConferenceBtn = document.getElementById('close-video-conference');
+        const roomIdInput = document.getElementById('room-id-input');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const currentRoomIdDisplay = document.getElementById('current-room-id');
+        const copyRoomIdBtn = document.getElementById('copy-room-id');
         const videoGrid = document.getElementById('video-grid');
         const localVideo = document.getElementById('local-video');
         const toggleMicBtn = document.getElementById('toggle-mic');
@@ -6516,7 +6535,11 @@
         function initVideoConference() {
             // Generate random room ID
             roomId = 'room-' + Math.random().toString(36).substr(2, 9);
-            
+            currentRoomIdDisplay.textContent = roomId;
+
+            // Event listeners
+            joinRoomBtn.addEventListener('click', joinRoom);
+            copyRoomIdBtn.addEventListener('click', copyRoomId);
             toggleMicBtn.addEventListener('click', toggleMic);
             toggleCameraBtn.addEventListener('click', toggleCamera);
             toggleScreenBtn.addEventListener('click', toggleScreenShare);
@@ -6525,23 +6548,27 @@
             videoChatInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') sendVideoChatMessage();
             });
-            
+
+            roomIdInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') joinRoom();
+            });
+
             // Initialize PeerJS
             if (typeof Peer !== 'undefined') {
                 peer = new Peer(roomId + '-local');
-                
+
                 peer.on('open', (id) => {
                     console.log('Peer connected with ID:', id);
                     showNotification('Video conference siap! ID Room: ' + roomId);
                 });
-                
+
                 peer.on('call', (call) => {
                     call.answer(localStream);
                     call.on('stream', (remoteStream) => {
                         addVideoStream(remoteStream, call.peer);
                     });
                 });
-                
+
                 peer.on('connection', (conn) => {
                     conn.on('data', (data) => {
                         handleVideoChatMessage(data);
@@ -6550,6 +6577,71 @@
             } else {
                 console.warn('PeerJS not loaded, video conference will not work');
             }
+        }
+
+        function joinRoom() {
+            const newRoomId = roomIdInput.value.trim();
+            if (!newRoomId) {
+                showNotification('Masukkan Room ID yang valid');
+                return;
+            }
+
+            if (peer) {
+                peer.destroy();
+            }
+
+            roomId = newRoomId;
+            currentRoomIdDisplay.textContent = roomId;
+
+            // Reinitialize peer with new room
+            if (typeof Peer !== 'undefined') {
+                peer = new Peer(roomId + '-local');
+
+                peer.on('open', (id) => {
+                    console.log('Joined room:', roomId);
+                    showNotification('Bergabung ke room: ' + roomId);
+
+                    // Try to connect to other peers in the room
+                    connectToRoomPeers();
+                });
+
+                peer.on('call', (call) => {
+                    call.answer(localStream);
+                    call.on('stream', (remoteStream) => {
+                        addVideoStream(remoteStream, call.peer);
+                    });
+                });
+
+                peer.on('connection', (conn) => {
+                    conn.on('data', (data) => {
+                        handleVideoChatMessage(data);
+                    });
+                });
+            }
+
+            roomIdInput.value = '';
+        }
+
+        function connectToRoomPeers() {
+            // This is a simplified approach - in a real implementation,
+            // you'd need a signaling server to discover peers in the room
+            // For now, we'll just show that the room is joined
+            console.log('Attempting to connect to peers in room:', roomId);
+        }
+
+        function copyRoomId() {
+            navigator.clipboard.writeText(roomId).then(() => {
+                showNotification('Room ID berhasil disalin!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = roomId;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('Room ID berhasil disalin!');
+            });
         }
         
         async function startVideoConference() {
