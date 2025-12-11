@@ -5160,44 +5160,71 @@
                     date: "11/12/2025",
                     text: "SEO metadata ditambahkan untuk visibilitas Google!",
                     isNew: true
+                },
+                {
+                    id: 11,
+                    date: "11/12/2025",
+                    text: "Semua fitur sekarang tersedia secara global!",
+                    isNew: true
                 }
             ];
-            
-            const savedAnnouncements = localStorage.getItem('announcements');
-            if (savedAnnouncements) {
-                announcements = JSON.parse(savedAnnouncements);
+
+            if (window.firebaseDatabase) {
+                const database = window.firebaseDatabase;
+                const announcementsRef = window.firebaseRef(database, 'globalAnnouncements');
+
+                // Set up real-time listener
+                window.firebaseOnValue(announcementsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        announcements = Object.values(data).sort((a, b) => b.id - a.id);
+                        checkNewAnnouncements();
+                        renderAnnouncements();
+                    } else {
+                        // Save default announcements to Firebase
+                        announcements = defaultAnnouncements;
+                        announcements.forEach(announcement => {
+                            window.firebasePush(announcementsRef, announcement);
+                        });
+                        checkNewAnnouncements();
+                        renderAnnouncements();
+                    }
+                });
             } else {
-                announcements = defaultAnnouncements;
-                localStorage.setItem('announcements', JSON.stringify(announcements));
+                // Fallback to localStorage
+                const savedAnnouncements = localStorage.getItem('announcements');
+                if (savedAnnouncements) {
+                    announcements = JSON.parse(savedAnnouncements);
+                } else {
+                    announcements = defaultAnnouncements;
+                    localStorage.setItem('announcements', JSON.stringify(announcements));
+                }
+                checkNewAnnouncements();
+                renderAnnouncements();
             }
-            
-            checkNewAnnouncements();
-            renderAnnouncements();
         }
         
         // NEW: Render Announcements
         function renderAnnouncements() {
             announcementList.innerHTML = '';
-            
+
             if (announcements.length === 0) {
-                announcementList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7);">Tidak ada pengumuman</p>';
+                announcementList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7);">Tidak ada pengumuman global</p>';
                 return;
             }
-            
-            const sortedAnnouncements = [...announcements].sort((a, b) => b.id - a.id);
-            
-            sortedAnnouncements.forEach(announcement => {
+
+            announcements.forEach(announcement => {
                 const announcementElement = document.createElement('div');
                 announcementElement.className = `announcement-item ${announcement.isNew ? 'announcement-new' : ''}`;
-                
+
                 announcementElement.innerHTML = `
                     <div class="announcement-date">${announcement.date}</div>
                     <div class="announcement-text">${announcement.text}</div>
                 `;
-                
+
                 announcementList.appendChild(announcementElement);
             });
-            
+
             updateAnnouncementBadge();
         }
         
@@ -5205,28 +5232,49 @@
         function checkNewAnnouncements() {
             const lastCheck = localStorage.getItem('lastAnnouncementCheck') || 0;
             const currentTime = Date.now();
-            
+
             announcementBtn.addEventListener('click', () => {
-                announcements.forEach(announcement => {
-                    announcement.isNew = false;
-                });
-                localStorage.setItem('announcements', JSON.stringify(announcements));
+                if (window.firebaseDatabase) {
+                    // Mark all as read in Firebase
+                    const database = window.firebaseDatabase;
+                    const announcementsRef = window.firebaseRef(database, 'globalAnnouncements');
+
+                    window.firebaseGet(announcementsRef).then((snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                window.firebaseUpdate(window.firebaseRef(database, `globalAnnouncements/${key}`), { isNew: false });
+                            });
+                        }
+                    });
+                } else {
+                    announcements.forEach(announcement => {
+                        announcement.isNew = false;
+                    });
+                    localStorage.setItem('announcements', JSON.stringify(announcements));
+                }
                 unreadAnnouncements = 0;
                 updateAnnouncementBadge();
             });
-            
+
             if (currentTime - lastCheck > 6 * 60 * 60 * 1000) {
                 const newAnnouncement = {
-                    id: announcements.length + 1,
+                    id: Date.now(),
                     date: new Date().toLocaleDateString('id-ID'),
-                    text: "Update terbaru: 6 Mini Games baru dan Video Conference!",
+                    text: "Update terbaru: Semua fitur sekarang global dan real-time!",
                     isNew: true
                 };
-                
-                announcements.unshift(newAnnouncement);
-                localStorage.setItem('announcements', JSON.stringify(announcements));
+
+                if (window.firebaseDatabase) {
+                    const database = window.firebaseDatabase;
+                    const announcementsRef = window.firebaseRef(database, 'globalAnnouncements');
+                    window.firebasePush(announcementsRef, newAnnouncement);
+                } else {
+                    announcements.unshift(newAnnouncement);
+                    localStorage.setItem('announcements', JSON.stringify(announcements));
+                }
+
                 localStorage.setItem('lastAnnouncementCheck', currentTime);
-                
                 unreadAnnouncements = announcements.filter(a => a.isNew).length;
                 updateAnnouncementBadge();
             }
@@ -5236,13 +5284,13 @@
         function updateAnnouncementBadge() {
             const newCount = announcements.filter(a => a.isNew).length;
             unreadAnnouncements = newCount;
-            
+
             if (newCount > 0) {
                 announcementBtn.classList.add('has-news');
-                announcementBtn.title = `${newCount} pengumuman baru`;
+                announcementBtn.title = `${newCount} pengumuman global baru`;
             } else {
                 announcementBtn.classList.remove('has-news');
-                announcementBtn.title = 'System Announcement';
+                announcementBtn.title = 'Global System Announcement';
             }
         }
         
@@ -5292,69 +5340,79 @@
         
         // NEW: Load Chat Messages
         function loadChatMessages() {
-            const savedMessages = localStorage.getItem('chatMessages');
-            if (savedMessages) {
-                try {
-                    chatMessages = JSON.parse(savedMessages);
-                    renderChatMessages();
-                } catch (e) {
-                    console.error('Error loading chat messages:', e);
-                    chatMessages = [];
-                }
-            } else {
-                // Add some default messages
-                chatMessages = [
-                    {
-                        id: Date.now() - 3600000,
-                        name: 'Al\'Majid',
-                        text: 'Selamat datang di chatbox! Silakan tinggalkan komentar.',
-                        timestamp: new Date(Date.now() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-                        date: new Date(Date.now() - 3600000).toLocaleDateString('id-ID')
-                    },
-                    {
-                        id: Date.now() - 1800000,
-                        name: 'Oradev',
-                        text: 'Website ini dibuat dengan❤️ menggunakan HTML, CSS, dan JavaScript!',
-                        timestamp: new Date(Date.now() - 1800000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-                        date: new Date(Date.now() - 1800000).toLocaleDateString('id-ID')
-                    }
-                ];
-                saveChatMessages();
-                renderChatMessages();
-            }
-        }
-        
-        // NEW: Save Chat Messages
-        function saveChatMessages() {
-            localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
-        }
-        
-        // NEW: Initialize Firebase Chat
-        function initFirebaseChat() {
-            try {
+            if (window.firebaseDatabase) {
                 const database = window.firebaseDatabase;
-                const chatRef = window.firebaseRef(database, 'chat/messages');
-                
+                const chatRef = window.firebaseRef(database, 'globalChat/messages');
+
+                // Set up real-time listener
                 window.firebaseOnValue(chatRef, (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        const messagesArray = Object.values(data);
-                        chatMessages = messagesArray;
-                        
-                        saveChatMessages();
+                        chatMessages = Object.values(data).sort((a, b) => a.id - b.id);
                         renderChatMessages();
-                        
-                        if (chatboxModal.style.display === 'none') {
-                            unreadMessages = messagesArray.length;
-                            updateChatboxBadge();
-                        }
+                    } else {
+                        // Add some default messages if no global messages exist
+                        chatMessages = [
+                            {
+                                id: Date.now() - 3600000,
+                                name: 'Al\'Majid',
+                                text: 'Selamat datang di chatbox global! Silakan tinggalkan komentar.',
+                                timestamp: new Date(Date.now() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                                date: new Date(Date.now() - 3600000).toLocaleDateString('id-ID')
+                            },
+                            {
+                                id: Date.now() - 1800000,
+                                name: 'Oradev',
+                                text: 'Website ini dibuat dengan❤️ menggunakan HTML, CSS, dan JavaScript!',
+                                timestamp: new Date(Date.now() - 1800000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                                date: new Date(Date.now() - 1800000).toLocaleDateString('id-ID')
+                            }
+                        ];
+                        // Save default messages to Firebase
+                        chatMessages.forEach(msg => {
+                            window.firebasePush(chatRef, msg);
+                        });
+                        renderChatMessages();
                     }
                 });
-                
-                console.log('Firebase chat initialized successfully');
-            } catch (error) {
-                console.error('Firebase initialization error:', error);
+            } else {
+                // Fallback to localStorage
+                const savedMessages = localStorage.getItem('chatMessages');
+                if (savedMessages) {
+                    try {
+                        chatMessages = JSON.parse(savedMessages);
+                        renderChatMessages();
+                    } catch (e) {
+                        console.error('Error loading chat messages:', e);
+                        chatMessages = [];
+                    }
+                } else {
+                    chatMessages = [
+                        {
+                            id: Date.now() - 3600000,
+                            name: 'Al\'Majid',
+                            text: 'Selamat datang di chatbox! Silakan tinggalkan komentar.',
+                            timestamp: new Date(Date.now() - 3600000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                            date: new Date(Date.now() - 3600000).toLocaleDateString('id-ID')
+                        }
+                    ];
+                    localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+                    renderChatMessages();
+                }
             }
+        }
+
+        // NEW: Save Chat Messages (only used for localStorage fallback)
+        function saveChatMessages() {
+            if (!window.firebaseDatabase) {
+                localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+            }
+        }
+        
+        // NEW: Initialize Firebase Chat (now handled in loadChatMessages)
+        function initFirebaseChat() {
+            // Chat initialization is now handled in loadChatMessages
+            console.log('Global Firebase chat initialized');
         }
         
         // NEW: Send Message
@@ -5389,18 +5447,23 @@
             
             // Add to local array
             chatMessages.push(message);
-            saveChatMessages();
-            renderChatMessages();
-            
-            // Send to Firebase if available
+
+            // Send to Firebase
             if (window.firebaseDatabase) {
                 try {
                     const database = window.firebaseDatabase;
-                    const chatRef = window.firebaseRef(database, 'chat/messages');
+                    const chatRef = window.firebaseRef(database, 'globalChat/messages');
                     window.firebasePush(chatRef, message);
+                    showNotification('Pesan terkirim ke chat global!');
                 } catch (error) {
                     console.error('Firebase send error:', error);
+                    showNotification('Error mengirim pesan');
                 }
+            } else {
+                // Fallback to localStorage
+                saveChatMessages();
+                renderChatMessages();
+                showNotification('Pesan disimpan lokal');
             }
             
             // Clear input and focus
@@ -5448,20 +5511,23 @@
                 date: new Date().toLocaleDateString('id-ID')
             };
             
-            // Add to local array
-            chatMessages.push(simulatedMessage);
-            saveChatMessages();
-            renderChatMessages();
-            
-            // Send to Firebase if available
+            // Send to Firebase
             if (window.firebaseDatabase) {
                 try {
                     const database = window.firebaseDatabase;
-                    const chatRef = window.firebaseRef(database, 'chat/messages');
+                    const chatRef = window.firebaseRef(database, 'globalChat/messages');
                     window.firebasePush(chatRef, simulatedMessage);
+                    showNotification('Komentar simulasi ditambahkan ke global chat!');
                 } catch (error) {
                     console.error('Firebase send error:', error);
+                    showNotification('Error menambah komentar simulasi');
                 }
+            } else {
+                // Fallback to localStorage
+                chatMessages.push(simulatedMessage);
+                saveChatMessages();
+                renderChatMessages();
+                showNotification('Komentar simulasi ditambahkan!');
             }
             
             // Show notification
@@ -5470,24 +5536,33 @@
         
         // NEW: Delete Message
         function deleteMessage(messageId) {
-            if (confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
-                chatMessages = chatMessages.filter(msg => msg.id !== messageId);
-                saveChatMessages();
-                renderChatMessages();
-                
-                // Try to delete from Firebase
+            if (confirm('Apakah Anda yakin ingin menghapus komentar ini dari global chat?')) {
                 if (window.firebaseDatabase) {
-                    try {
-                        const database = window.firebaseDatabase;
-                        // Note: Firebase deletion by ID requires knowing the key
-                        // For simplicity, we'll just update localStorage
-                        console.log('Message deleted from local storage');
-                    } catch (error) {
+                    // Find and delete from Firebase
+                    const database = window.firebaseDatabase;
+                    const chatRef = window.firebaseRef(database, 'globalChat/messages');
+
+                    // Get all messages to find the key
+                    window.firebaseGet(chatRef).then((snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            const keyToDelete = Object.keys(data).find(key => data[key].id === messageId);
+                            if (keyToDelete) {
+                                window.firebaseRemove(window.firebaseRef(database, `globalChat/messages/${keyToDelete}`));
+                                showNotification('Komentar berhasil dihapus dari global chat!');
+                            }
+                        }
+                    }).catch(error => {
                         console.error('Firebase delete error:', error);
-                    }
+                        showNotification('Error menghapus komentar');
+                    });
+                } else {
+                    // Fallback to localStorage
+                    chatMessages = chatMessages.filter(msg => msg.id !== messageId);
+                    saveChatMessages();
+                    renderChatMessages();
+                    showNotification('Komentar berhasil dihapus!');
                 }
-                
-                showNotification('Komentar berhasil dihapus!');
             }
         }
         
@@ -5725,58 +5800,100 @@
                 username: currentUser.username,
                 game: game,
                 score: score,
-                date: new Date().toLocaleDateString('id-ID')
+                date: new Date().toLocaleDateString('id-ID'),
+                timestamp: Date.now()
             };
-            
-            // Save to localStorage
-            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-            leaderboard.push(leaderboardEntry);
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 50); // Keep top 50
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-            
-            // Save to Firebase if available
+
+            // Save to Firebase
             if (window.firebaseDatabase) {
                 try {
                     const database = window.firebaseDatabase;
                     const leaderboardRef = window.firebaseRef(database, 'leaderboard');
                     window.firebasePush(leaderboardRef, leaderboardEntry);
+                    showNotification('Skor berhasil disimpan ke leaderboard global!');
                 } catch (error) {
                     console.error('Firebase save error:', error);
+                    showNotification('Error menyimpan skor');
                 }
+            } else {
+                // Fallback to localStorage if Firebase not available
+                let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+                leaderboard.push(leaderboardEntry);
+                leaderboard.sort((a, b) => b.score - a.score);
+                leaderboard = leaderboard.slice(0, 50);
+                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+                showNotification('Skor disimpan lokal (Firebase tidak tersedia)');
             }
-            
+
             // Update leaderboard display
             loadLeaderboard();
         }
         
         function loadLeaderboard() {
-            leaderboardBody.innerHTML = '';
+            leaderboardBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem;">
+                        Memuat leaderboard global...
+                    </td>
+                </tr>
+            `;
 
-            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            if (window.firebaseDatabase) {
+                const database = window.firebaseDatabase;
+                const leaderboardRef = window.firebaseRef(database, 'leaderboard');
+
+                // Set up real-time listener
+                window.firebaseOnValue(leaderboardRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const leaderboard = Object.values(data);
+
+                        // Group by username and get best score for each user
+                        const userBestScores = {};
+                        leaderboard.forEach(entry => {
+                            if (!userBestScores[entry.username] || entry.score > userBestScores[entry.username].score) {
+                                userBestScores[entry.username] = entry;
+                            }
+                        });
+
+                        const globalLeaderboard = Object.values(userBestScores).sort((a, b) => b.score - a.score);
+
+                        renderLeaderboard(globalLeaderboard.slice(0, 10));
+                    } else {
+                        renderLeaderboard([]);
+                    }
+                });
+            } else {
+                // Fallback to localStorage
+                let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+
+                const userBestScores = {};
+                leaderboard.forEach(entry => {
+                    if (!userBestScores[entry.username] || entry.score > userBestScores[entry.username].score) {
+                        userBestScores[entry.username] = entry;
+                    }
+                });
+
+                const globalLeaderboard = Object.values(userBestScores).sort((a, b) => b.score - a.score);
+                renderLeaderboard(globalLeaderboard.slice(0, 10));
+            }
+        }
+
+        function renderLeaderboard(leaderboard) {
+            leaderboardBody.innerHTML = '';
 
             if (leaderboard.length === 0) {
                 leaderboardBody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 2rem;">
-                            Belum ada skor di leaderboard. Jadilah yang pertama!
+                            Belum ada skor di leaderboard global. Jadilah yang pertama!
                         </td>
                     </tr>
                 `;
                 return;
             }
 
-            // Group by username and get best score for each user
-            const userBestScores = {};
-            leaderboard.forEach(entry => {
-                if (!userBestScores[entry.username] || entry.score > userBestScores[entry.username].score) {
-                    userBestScores[entry.username] = entry;
-                }
-            });
-
-            const globalLeaderboard = Object.values(userBestScores).sort((a, b) => b.score - a.score);
-
-            globalLeaderboard.slice(0, 10).forEach((entry, index) => {
+            leaderboard.forEach((entry, index) => {
                 const row = document.createElement('tr');
                 row.className = `rank-${index + 1}`;
 
@@ -5796,10 +5913,39 @@
             const tbody = document.getElementById(tbodyId);
             if (!tbody) return;
 
-            tbody.innerHTML = '';
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 1rem;">
+                        Memuat...
+                    </td>
+                </tr>
+            `;
 
-            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-            const gameEntries = leaderboard.filter(entry => entry.game === game).sort((a, b) => b.score - a.score);
+            if (window.firebaseDatabase) {
+                const database = window.firebaseDatabase;
+                const leaderboardRef = window.firebaseRef(database, 'leaderboard');
+
+                window.firebaseOnValue(leaderboardRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const leaderboard = Object.values(data);
+                        const gameEntries = leaderboard.filter(entry => entry.game === game).sort((a, b) => b.score - a.score);
+
+                        renderGameLeaderboard(tbody, gameEntries.slice(0, 5));
+                    } else {
+                        renderGameLeaderboard(tbody, []);
+                    }
+                });
+            } else {
+                // Fallback to localStorage
+                let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+                const gameEntries = leaderboard.filter(entry => entry.game === game).sort((a, b) => b.score - a.score);
+                renderGameLeaderboard(tbody, gameEntries.slice(0, 5));
+            }
+        }
+
+        function renderGameLeaderboard(tbody, gameEntries) {
+            tbody.innerHTML = '';
 
             if (gameEntries.length === 0) {
                 tbody.innerHTML = `
@@ -5812,7 +5958,7 @@
                 return;
             }
 
-            gameEntries.slice(0, 5).forEach((entry, index) => {
+            gameEntries.forEach((entry, index) => {
                 const row = document.createElement('tr');
                 row.className = `rank-${index + 1}`;
 
@@ -6408,29 +6554,64 @@
         
         function handleFileUpload(e) {
             const files = Array.from(e.target.files);
-            
+
             files.forEach(file => {
                 if (file.size > 20 * 1024 * 1024) { // 20MB limit
                     showNotification(`File ${file.name} terlalu besar (max 20MB)`);
                     return;
                 }
-                
-                // Simulate upload
-                uploadedFiles.push({
+
+                // Upload to Firebase Storage if available
+                if (window.firebaseStorage) {
+                    uploadFileToFirebase(file);
+                } else {
+                    // Fallback to local storage
+                    uploadedFiles.push({
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        size: formatFileSize(file.size),
+                        type: file.type,
+                        url: URL.createObjectURL(file),
+                        date: new Date().toLocaleDateString('id-ID'),
+                        uploadedBy: 'Local User'
+                    });
+
+                    saveFiles();
+                    renderFiles();
+                    showNotification(`File ${file.name} berhasil diupload (lokal)`);
+                }
+            });
+
+            fileInput.value = '';
+        }
+
+        async function uploadFileToFirebase(file) {
+            try {
+                const storage = window.firebaseStorage;
+                const storageRef = window.firebaseStorageRef(storage, `sharedFiles/${Date.now()}_${file.name}`);
+
+                const snapshot = await window.firebaseUploadBytes(storageRef, file);
+                const downloadURL = await window.firebaseGetDownloadURL(snapshot.ref);
+
+                const fileData = {
                     id: Date.now() + Math.random(),
                     name: file.name,
                     size: formatFileSize(file.size),
                     type: file.type,
-                    url: URL.createObjectURL(file),
-                    date: new Date().toLocaleDateString('id-ID')
-                });
-                
+                    url: downloadURL,
+                    date: new Date().toLocaleDateString('id-ID'),
+                    uploadedBy: 'Global User'
+                };
+
+                uploadedFiles.push(fileData);
                 saveFiles();
                 renderFiles();
-                showNotification(`File ${file.name} berhasil diupload`);
-            });
-            
-            fileInput.value = '';
+                showNotification(`File ${file.name} berhasil diupload ke global storage!`);
+
+            } catch (error) {
+                console.error('Firebase upload error:', error);
+                showNotification('Error upload file ke global storage');
+            }
         }
         
         function formatFileSize(bytes) {
@@ -6440,42 +6621,66 @@
         }
         
         function saveFiles() {
-            localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+            if (window.firebaseDatabase) {
+                const database = window.firebaseDatabase;
+                const filesRef = window.firebaseRef(database, 'sharedFiles');
+                window.firebaseSet(filesRef, uploadedFiles);
+            } else {
+                // Fallback to localStorage
+                localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+            }
         }
-        
+
         function loadFiles() {
-            const savedFiles = localStorage.getItem('uploadedFiles');
-            if (savedFiles) {
-                uploadedFiles = JSON.parse(savedFiles);
-                renderFiles();
+            if (window.firebaseDatabase) {
+                const database = window.firebaseDatabase;
+                const filesRef = window.firebaseRef(database, 'sharedFiles');
+
+                window.firebaseOnValue(filesRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        uploadedFiles = data;
+                        renderFiles();
+                    } else {
+                        uploadedFiles = [];
+                        renderFiles();
+                    }
+                });
+            } else {
+                // Fallback to localStorage
+                const savedFiles = localStorage.getItem('uploadedFiles');
+                if (savedFiles) {
+                    uploadedFiles = JSON.parse(savedFiles);
+                    renderFiles();
+                }
             }
         }
         
         function renderFiles() {
             fileList.innerHTML = '';
-            
+
             if (uploadedFiles.length === 0) {
                 fileList.innerHTML = `
                     <div style="text-align: center; color: rgba(255,255,255,0.6); padding: 2rem;">
-                        Belum ada file yang diupload
+                        Belum ada file yang diupload secara global
                     </div>
                 `;
                 return;
             }
-            
+
             uploadedFiles.forEach(file => {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
-                
+
                 const icon = getFileIcon(file.type);
-                
+
                 fileItem.innerHTML = `
                     <div class="file-icon">
                         <i class="${icon}"></i>
                     </div>
                     <div class="file-info">
                         <div class="file-name">${file.name}</div>
-                        <div class="file-size">${file.size} • ${file.date}</div>
+                        <div class="file-size">${file.size} • ${file.date} • ${file.uploadedBy || 'Unknown'}</div>
                     </div>
                     <div class="file-actions">
                         <button class="file-action-btn download-btn" data-id="${file.id}">
@@ -6486,10 +6691,10 @@
                         </button>
                     </div>
                 `;
-                
+
                 fileList.appendChild(fileItem);
             });
-            
+
             // Add event listeners for buttons
             document.querySelectorAll('.download-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -6504,15 +6709,15 @@
                     }
                 });
             });
-            
+
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const fileId = e.target.closest('.delete-btn').dataset.id;
-                    if (confirm('Apakah Anda yakin ingin menghapus file ini?')) {
+                    if (confirm('Apakah Anda yakin ingin menghapus file ini dari global storage?')) {
                         uploadedFiles = uploadedFiles.filter(f => f.id != fileId);
                         saveFiles();
                         renderFiles();
-                        showNotification('File berhasil dihapus');
+                        showNotification('File berhasil dihapus dari global storage');
                     }
                 });
             });
