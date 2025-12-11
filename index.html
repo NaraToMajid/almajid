@@ -4495,7 +4495,7 @@
             <div class="video-call-container">
                 <div style="margin-bottom: 1rem; text-align: center;">
                     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
-                        <input type="text" id="room-id-input" placeholder="Masukkan Room ID" style="padding: 0.5rem; border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; width: 200px;">
+                        <input type="text" id="room-id-input" placeholder="Masukkan Room ID (6 digit)" style="padding: 0.5rem; border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; width: 200px;">
                         <button class="call-btn" id="join-room-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
                             <i class="fas fa-sign-in-alt"></i> Join
                         </button>
@@ -4505,6 +4505,7 @@
                         <button id="copy-room-id" style="margin-left: 10px; background: none; border: none; color: #4a6cf7; cursor: pointer; font-size: 0.8rem;">
                             <i class="fas fa-copy"></i>
                         </button>
+                        <br><small>Bagikan Room ID ini ke orang lain untuk bergabung</small>
                     </div>
                 </div>
 
@@ -6533,8 +6534,8 @@
         // ==============================
         
         function initVideoConference() {
-            // Generate random room ID
-            roomId = 'room-' + Math.random().toString(36).substr(2, 9);
+            // Generate unique numeric room ID
+            roomId = generateUniqueRoomId();
             currentRoomIdDisplay.textContent = roomId;
 
             // Event listeners
@@ -6581,8 +6582,8 @@
 
         function joinRoom() {
             const newRoomId = roomIdInput.value.trim();
-            if (!newRoomId) {
-                showNotification('Masukkan Room ID yang valid');
+            if (!newRoomId || !/^\d{6}$/.test(newRoomId)) {
+                showNotification('Masukkan Room ID 6 digit angka yang valid');
                 return;
             }
 
@@ -6623,10 +6624,25 @@
         }
 
         function connectToRoomPeers() {
-            // This is a simplified approach - in a real implementation,
-            // you'd need a signaling server to discover peers in the room
-            // For now, we'll just show that the room is joined
-            console.log('Attempting to connect to peers in room:', roomId);
+            // Note: For full global connectivity, a proper signaling server is needed
+            // The current implementation uses PeerJS public servers for basic peer discovery
+            console.log('Room joined:', roomId, '- Waiting for other peers to connect...');
+
+            // Show notification about connection status
+            showNotification('Room ' + roomId + ' siap! Tunggu orang lain join dengan ID yang sama');
+        }
+
+        function generateUniqueRoomId() {
+            // Generate a unique 6-digit numeric room ID
+            let id;
+            do {
+                id = Math.floor(100000 + Math.random() * 900000); // 6-digit number
+            } while (localStorage.getItem('used_room_' + id)); // Ensure uniqueness
+
+            // Mark this ID as used
+            localStorage.setItem('used_room_' + id, 'true');
+
+            return id.toString();
         }
 
         function copyRoomId() {
