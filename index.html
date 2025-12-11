@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Al'Majid - Portfolio</title>
+    <meta name="description" content="Portfolio Al'Majid - Web Developer, Designer, Creator.">
+    <meta name="keywords" content="web developer, portfolio, indonesia, programmer">
+    <meta property="og:title" content="Al'Majid - Portfolio">
+    <meta property="og:description" content="Website resmi Al'Majid. Projects, apps, games, gallery, chat, dan lainnya.">
+    <meta property="og:image" content="profil.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@800&display=swap" rel="stylesheet">
@@ -13,7 +18,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove, set, get, child } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAvpWiPJfJgDlZqIGdY4pjbrOGSePbwG7Q",
@@ -30,27 +36,35 @@
         const analytics = getAnalytics(app);
         window.firebaseApp = app;
         window.firebaseDatabase = getDatabase(app);
+        window.firebaseStorage = getStorage(app);
         window.firebaseRef = ref;
         window.firebasePush = push;
         window.firebaseOnValue = onValue;
         window.firebaseRemove = remove;
         window.firebaseSet = set;
+        window.firebaseGet = get;
+        window.firebaseChild = child;
+        window.firebaseStorageRef = storageRef;
+        window.firebaseUploadBytes = uploadBytes;
+        window.firebaseGetDownloadURL = getDownloadURL;
     </script>
     
     <style>
-        /* Mencegah scroll selama loading */
-        body.loading {
-            overflow: hidden !important;
-            height: 100vh !important;
-            position: fixed !important;
-            width: 100% !important;
-        }
-        
+        /* RESET & GLOBAL STYLES */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
+        }
+        
+        /* Mencegah scroll selama loading dan saat modal terbuka */
+        body.loading,
+        body.modal-open {
+            overflow: hidden !important;
+            height: 100vh !important;
+            position: fixed !important;
+            width: 100% !important;
         }
         
         body {
@@ -64,6 +78,67 @@
         body.light-mode {
             background-color: #f8f9fa;
             color: #121212;
+        }
+        
+        
+        /* NEW: Online Now Badge */
+        .online-badge {
+            position: fixed;
+            top: 20px;
+            right: 250px;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            color: #000;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+            animation: pulse 2s infinite;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .light-mode .online-badge {
+            color: #000;
+        }
+        
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+        
+        /* NEW: Status Real-Time */
+        .status-container {
+            position: fixed;
+            top: 60px;
+            right: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .light-mode .status-container {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-text {
+            color: #4a6cf7;
+            font-weight: 600;
         }
         
         /* NEW: Parallax Container */
@@ -91,7 +166,7 @@
             pointer-events: none;
         }
         
-        /* Oradev Intro Overlay - DIPERBAIKI */
+        /* Oradev Intro Overlay */
         #oradev-intro {
             position: fixed;
             top: 0;
@@ -281,7 +356,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: pointer;
+            cursor: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -322,6 +397,7 @@
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
+            cursor: default;
         }
         
         .announcement-list {
@@ -379,7 +455,7 @@
             background-color: #4a6cf7;
             color: white;
             font-size: 1.5rem;
-            cursor: pointer;
+            cursor: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -409,13 +485,14 @@
             animation: pulse 2s infinite;
         }
         
-        /* Chatbox Modal - DIPERBAIKI */
+        /* Chatbox Modal */
         .chatbox-modal .modal-content {
             max-width: 500px;
             max-height: 85vh;
             display: flex;
             flex-direction: column;
             padding: 1.5rem;
+            cursor: default;
         }
         
         .chatbox-header {
@@ -458,6 +535,7 @@
             border-radius: 10px;
             border-left: 4px solid #4a6cf7;
             position: relative;
+            cursor: default;
         }
         
         .light-mode .message-item {
@@ -506,7 +584,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            cursor: none;
             font-size: 0.7rem;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -538,6 +616,7 @@
             font-size: 0.9rem;
             font-weight: 500;
             white-space: nowrap;
+            cursor: default;
         }
         
         .chatbox-name-input {
@@ -548,6 +627,7 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 0.9rem;
+            cursor: text;
         }
         
         .light-mode .chatbox-name-input {
@@ -569,6 +649,7 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 0.95rem;
+            cursor: text;
         }
         
         .light-mode .chatbox-input {
@@ -588,7 +669,7 @@
             color: white;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
+            cursor: none;
             font-weight: 600;
             transition: all 0.3s ease;
             min-width: 80px;
@@ -606,7 +687,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             color: white;
-            cursor: pointer;
+            cursor: none;
             font-size: 0.85rem;
             transition: all 0.3s ease;
             margin-top: 0.5rem;
@@ -638,6 +719,7 @@
             transform: translateY(20px);
             animation: fadeInUp 0.8s ease forwards;
             animation-delay: 0.4s;
+            cursor: default;
         }
         
         .light-mode .clock-container {
@@ -708,7 +790,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: pointer;
+            cursor: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -744,17 +826,21 @@
         
         .slider-wrapper {
             display: flex;
-            width: 200%;
+            width: 300%;
             height: 100%;
             transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
         
         .slider-wrapper.slide-2 {
-            transform: translateX(-50%);
+            transform: translateX(-33.33%);
+        }
+        
+        .slider-wrapper.slide-3 {
+            transform: translateX(-66.66%);
         }
         
         .slide {
-            width: 50%;
+            width: 33.33%;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -794,7 +880,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             margin-bottom: 2rem;
             transition: transform 0.3s ease, border-color 0.3s ease;
-            cursor: pointer;
+            cursor: none;
         }
         
         .light-mode .profile-pic {
@@ -857,6 +943,7 @@
             font-weight: 600;
             border: 1px solid rgba(74, 108, 247, 0.3);
             transition: all 0.3s ease;
+            cursor: default;
         }
         
         .light-mode .role-tag {
@@ -896,7 +983,7 @@
             font-weight: 500;
             text-decoration: none;
             transition: all 0.3s ease;
-            cursor: pointer;
+            cursor: none;
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
@@ -955,7 +1042,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: pointer;
+            cursor: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1017,6 +1104,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             animation: fadeInUp 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
             opacity: 0;
+            cursor: default;
         }
         
         .light-mode .modal-content {
@@ -1049,7 +1137,7 @@
             height: 40px;
             border-radius: 50%;
             font-size: 1.2rem;
-            cursor: pointer;
+            cursor: none;
             transition: background-color 0.3s ease;
             display: flex;
             align-items: center;
@@ -1115,6 +1203,7 @@
             font-weight: 500;
             color: #fff;
             transition: all 0.3s ease;
+            cursor: default;
         }
         
         .light-mode .language-item {
@@ -1158,7 +1247,7 @@
             height: 60px;
             object-fit: cover;
             border-radius: 5px;
-            cursor: pointer;
+            cursor: none;
             opacity: 0.6;
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
@@ -1175,7 +1264,7 @@
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
             font-size: 1rem;
-            cursor: pointer;
+            cursor: none;
             transition: background-color 0.3s ease;
         }
         
@@ -1285,6 +1374,7 @@
             animation: fadeInUp 1s ease forwards;
             opacity: 0;
             animation-delay: 0.7s;
+            cursor: default;
         }
         
         .light-mode .footer {
@@ -1305,6 +1395,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             display: none;
             z-index: 1000;
+            cursor: default;
         }
         
         .light-mode .music-status {
@@ -1338,7 +1429,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: pointer;
+            cursor: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1382,6 +1473,7 @@
             transform: translateY(20px);
             animation: fadeInUp 0.8s ease forwards;
             animation-delay: 0.4s;
+            cursor: default;
         }
         
         .light-mode .slide-indicator {
@@ -1428,7 +1520,7 @@
             font-weight: 500;
             text-decoration: none;
             transition: all 0.3s ease;
-            cursor: pointer;
+            cursor: none;
             backdrop-filter: blur(10px);
             text-align: left;
             opacity: 0;
@@ -1576,7 +1668,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.3s ease;
         }
         
@@ -1623,7 +1715,7 @@
             font-weight: 500;
             text-decoration: none;
             transition: all 0.3s ease;
-            cursor: pointer;
+            cursor: none;
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
@@ -1657,6 +1749,7 @@
             color: rgba(255, 255, 255, 0.7);
             font-size: 1.2rem;
             max-width: 500px;
+            cursor: default;
         }
         
         .light-mode .empty-gallery-message {
@@ -1719,7 +1812,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 1.2rem;
-            cursor: pointer;
+            cursor: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1748,6 +1841,868 @@
             color: white;
         }
         
+        /* NEW: Slide 3 Styles */
+        .slide-3-content {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .slide-3-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #4a6cf7;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .coming-soon-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .light-mode .coming-soon-container {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .coming-soon-icon {
+            font-size: 4rem;
+            color: #4a6cf7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .coming-soon-text {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: inherit;
+        }
+        
+        .light-mode .coming-soon-text {
+            color: #121212;
+        }
+        
+        /* NEW: Mini Games Styles */
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+        
+        .game-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            cursor: none;
+            text-align: center;
+        }
+        
+        .light-mode .game-card {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-icon {
+            font-size: 2.5rem;
+            color: #4a6cf7;
+            margin-bottom: 1rem;
+        }
+        
+        .game-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        
+        .light-mode .game-title {
+            color: #121212;
+        }
+        
+        .game-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+        }
+        
+        .light-mode .game-desc {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .play-game-btn {
+            padding: 0.8rem 1.5rem;
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: none;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .play-game-btn:hover {
+            background: #3a5ce5;
+            transform: translateY(-2px);
+        }
+        
+        /* Game Modal Styles */
+        .game-modal .modal-content {
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .game-screen {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .light-mode .game-screen {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .game-instructions {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .light-mode .game-instructions {
+            color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .reaction-box {
+            width: 200px;
+            height: 200px;
+            background-color: #4a6cf7;
+            border-radius: 10px;
+            cursor: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+            margin: 1rem auto;
+        }
+        
+        .reaction-box.waiting {
+            background-color: #4a6cf7;
+        }
+        
+        .reaction-box.ready {
+            background-color: #00ff88;
+        }
+        
+        .reaction-box.too-fast {
+            background-color: #ff4757;
+        }
+        
+        .number-input {
+            padding: 1rem;
+            font-size: 1.5rem;
+            width: 200px;
+            text-align: center;
+            border-radius: 8px;
+            border: 2px solid #4a6cf7;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin: 1rem 0;
+        }
+        
+        .light-mode .number-input {
+            background: rgba(0, 0, 0, 0.05);
+            color: #121212;
+        }
+        
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 1rem auto;
+            max-width: 400px;
+        }
+        
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            background-color: #4a6cf7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: none;
+            user-select: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .memory-card.flipped {
+            background-color: #3a5ce5;
+            transform: rotateY(180deg);
+        }
+        
+        .memory-card.matched {
+            background-color: #00ff88;
+            cursor: default;
+        }
+        
+        .tic-tac-toe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin: 1rem auto;
+            max-width: 300px;
+        }
+        
+        .ttt-cell {
+            width: 90px;
+            height: 90px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            cursor: none;
+        }
+        
+        .light-mode .ttt-cell {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .ttt-cell.x {
+            color: #ff6b6b;
+        }
+        
+        .ttt-cell.o {
+            color: #4a6cf7;
+        }
+        
+        .typing-text {
+            font-size: 1.5rem;
+            margin: 1.5rem 0;
+            color: #fff;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .light-mode .typing-text {
+            color: #121212;
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .typing-input {
+            padding: 1rem;
+            font-size: 1.2rem;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px solid #4a6cf7;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin: 1rem 0;
+        }
+        
+        .light-mode .typing-input {
+            background: rgba(0, 0, 0, 0.05);
+            color: #121212;
+        }
+        
+        .trivia-question {
+            font-size: 1.2rem;
+            margin: 1.5rem 0;
+            color: #fff;
+        }
+        
+        .light-mode .trivia-question {
+            color: #121212;
+        }
+        
+        .trivia-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        
+        .trivia-option {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: none;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .light-mode .trivia-option {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .trivia-option:hover {
+            background: rgba(74, 108, 247, 0.2);
+        }
+        
+        .trivia-option.correct {
+            background: rgba(0, 255, 136, 0.2);
+            border-left: 4px solid #00ff88;
+        }
+        
+        .trivia-option.incorrect {
+            background: rgba(255, 107, 107, 0.2);
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .light-mode .game-stats {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4a6cf7;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .light-mode .stat-label {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Login/Register Modal */
+        .auth-modal .modal-content {
+            max-width: 400px;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .auth-input {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .light-mode .auth-input {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.05);
+            color: #121212;
+        }
+        
+        .auth-btn {
+            padding: 0.8rem 1rem;
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: none;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .auth-btn:hover {
+            background: #3a5ce5;
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .light-mode .auth-switch {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .auth-link {
+            color: #4a6cf7;
+            cursor: none;
+            text-decoration: underline;
+        }
+        
+        /* Leaderboard Styles */
+        .leaderboard-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .light-mode .leaderboard-container {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .leaderboard-table th {
+            text-align: left;
+            padding: 0.8rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            color: #4a6cf7;
+            font-weight: 600;
+        }
+        
+        .light-mode .leaderboard-table th {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .leaderboard-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .light-mode .leaderboard-table td {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .leaderboard-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .light-mode .leaderboard-table tr:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .rank-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+        }
+        
+        .rank-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.1), transparent);
+        }
+        
+        .rank-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.1), transparent);
+        }
+        
+        /* File Sharing Styles */
+        .file-sharing-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .light-mode .file-sharing-container {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .file-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: none;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .light-mode .file-upload-area {
+            border: 2px dashed rgba(0, 0, 0, 0.2);
+        }
+        
+        .file-upload-area:hover {
+            border-color: #4a6cf7;
+            background: rgba(74, 108, 247, 0.05);
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+        
+        .file-list {
+            margin-top: 1.5rem;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+        
+        .light-mode .file-item {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .file-icon {
+            font-size: 1.5rem;
+            color: #4a6cf7;
+            margin-right: 1rem;
+            width: 40px;
+        }
+        
+        .file-info {
+            flex-grow: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .file-size {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .light-mode .file-size {
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .file-action-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: none;
+            transition: all 0.3s ease;
+        }
+        
+        .light-mode .file-action-btn {
+            background: rgba(0, 0, 0, 0.05);
+            color: #121212;
+        }
+        
+        .file-action-btn:hover {
+            background: #4a6cf7;
+            color: white;
+        }
+        
+        /* Video Call Styles */
+        .video-call-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .light-mode .video-call-container {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .video-item {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem;
+            color: white;
+        }
+        
+        .call-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .call-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: none;
+            transition: all 0.3s ease;
+        }
+        
+        .call-btn:hover {
+            background: #4a6cf7;
+            transform: scale(1.1);
+        }
+        
+        .call-btn.active {
+            background: #ff4757;
+        }
+        
+        .call-btn.end-call {
+            background: #ff4757;
+        }
+        
+        .chat-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .light-mode .chat-container {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        /* AI Assistant Styles */
+        .ai-assistant-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .light-mode .ai-assistant-container {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .ai-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ai-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .ai-message.user {
+            background: rgba(74, 108, 247, 0.2);
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+        
+        .ai-message.assistant {
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: auto;
+            border-bottom-left-radius: 2px;
+        }
+        
+        .light-mode .ai-message.assistant {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .ai-question-choices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .ai-question-btn {
+            padding: 0.6rem 1rem;
+            background: rgba(74, 108, 247, 0.1);
+            border: 1px solid rgba(74, 108, 247, 0.3);
+            border-radius: 6px;
+            color: #4a6cf7;
+            cursor: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .light-mode .ai-question-btn {
+            background: rgba(74, 108, 247, 0.05);
+            border: 1px solid rgba(74, 108, 247, 0.2);
+        }
+
+        .ai-question-btn:hover {
+            background: rgba(74, 108, 247, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input {
+            flex-grow: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .light-mode .ai-input {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.05);
+            color: #121212;
+        }
+
+        .ai-send-btn {
+            padding: 0.8rem 1.5rem;
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: none;
+            font-weight: 600;
+        }
+        
+        /* Progress Container */
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #4a6cf7, #8a6cf7);
+            border-radius: 10px;
+            width: 45%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+        }
+        
+        .light-mode .progress-text {
+            color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .light-mode .feature-item {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: #4a6cf7;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .light-mode .feature-desc {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -1766,9 +2721,14 @@
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
         
         @keyframes shake {
@@ -1797,23 +2757,44 @@
         
         /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .slider-container {
+                min-height: auto;
+                height: auto;
+            }
+
+            .slide {
+                min-height: auto;
+                height: auto;
+                padding: 1rem;
+            }
+
+            .content {
+                min-height: auto;
+                padding: 1rem;
+            }
+
             .name {
                 font-size: 2.5rem;
             }
-            
+
             .welcome-text {
                 font-size: 1.8rem;
             }
-            
+
             .bio {
                 font-size: 1.1rem;
             }
-            
+
             .profile-pic {
                 width: 150px;
                 height: 150px;
             }
-            
+
             .btn {
                 padding: 1rem 1.2rem;
                 font-size: 1rem;
@@ -1984,6 +2965,55 @@
             
             .date-display {
                 font-size: 0.8rem;
+            }
+            
+            /* NEW: Online Badge Responsive */
+            .online-badge {
+                right: 200px;
+                font-size: 0.7rem;
+                padding: 5px 10px;
+            }
+            
+            .status-container {
+                right: 200px;
+                top: 50px;
+                font-size: 0.7rem;
+                padding: 6px 12px;
+            }
+            
+            /* NEW: Slide 3 Responsive */
+            .slide-3-title {
+                font-size: 2rem;
+            }
+            
+            .coming-soon-icon {
+                font-size: 3rem;
+            }
+            
+            .coming-soon-text {
+                font-size: 1.3rem;
+            }
+            
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Games Responsive */
+            .games-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .memory-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .memory-card {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -2180,6 +3210,20 @@
                 font-size: 0.75rem;
             }
             
+            /* NEW: Online Badge Mobile */
+            .online-badge {
+                right: 150px;
+                font-size: 0.65rem;
+                padding: 4px 8px;
+            }
+            
+            .status-container {
+                right: 150px;
+                top: 45px;
+                font-size: 0.65rem;
+                padding: 5px 10px;
+            }
+            
             /* Chatbox mobile improvements */
             .chatbox-input-form {
                 gap: 8px;
@@ -2207,6 +3251,141 @@
             .chatbox-send {
                 padding: 0.7rem 1rem;
                 font-size: 0.9rem;
+            }
+            
+            /* NEW: Slide 3 Mobile */
+            .slide-3-title {
+                font-size: 1.8rem;
+            }
+            
+            .coming-soon-container {
+                padding: 2rem 1rem;
+            }
+            
+            .coming-soon-icon {
+                font-size: 2.5rem;
+            }
+            
+            .coming-soon-text {
+                font-size: 1.2rem;
+            }
+            
+            .progress-bar {
+                height: 15px;
+            }
+            
+            .feature-item {
+                padding: 1rem;
+            }
+            
+            .feature-icon {
+                font-size: 1.5rem;
+            }
+            
+            .feature-title {
+                font-size: 1.1rem;
+            }
+            
+            /* Games Mobile */
+            .memory-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 5px;
+            }
+            
+            .memory-card {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+            
+            .ttt-cell {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            
+            .reaction-box {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .typing-text {
+                font-size: 1.2rem;
+                padding: 0.8rem;
+            }
+            
+            .typing-input {
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+        }
+        
+        /* NEW: Mobile Stack untuk kontrol yang banyak */
+        @media (max-width: 380px) {
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            
+            .theme-toggle {
+                top: 15px;
+                left: 15px;
+            }
+            
+            .music-controls {
+                top: 15px;
+                left: 65px;
+            }
+            
+            .particles-control-btn {
+                top: 15px;
+                right: 110px;
+            }
+            
+            .announcement-btn {
+                top: 70px;
+                right: 15px;
+            }
+            
+            .online-badge {
+                right: 130px;
+                font-size: 0.6rem;
+            }
+            
+            .status-container {
+                right: 130px;
+            }
+            
+            /* Games extra small */
+            .memory-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 4px;
+            }
+            
+            .memory-card {
+                width: 55px;
+                height: 55px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* NEW: Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .control-btn,
+            .music-control-btn,
+            .slider-nav-btn,
+            .particles-control-btn,
+            .announcement-btn,
+            .chatbox-btn,
+            .btn,
+            .app-btn,
+            .request-btn,
+            .play-game-btn,
+            .call-btn,
+            .file-action-btn,
+            .ai-send-btn,
+            .auth-btn {
+                cursor: pointer;
             }
         }
     </style>
@@ -2249,6 +3428,17 @@
     <!-- NEW: Particle Container -->
     <div id="particles-js"></div>
     
+    <!-- NEW: Online Now Badge -->
+    <div class="online-badge" id="online-badge">
+        <div class="online-dot"></div>
+        ONLINE NOW
+    </div>
+    
+    <!-- NEW: Status Real-Time -->
+    <div class="status-container" id="status-container">
+        <span class="status-text" id="status-text">Available</span>
+    </div>
+    
     <!-- NEW: Clock & Date Display -->
     <div class="clock-container" id="clock-container">
         <div class="time-display" id="time-display">00:00:00</div>
@@ -2286,7 +3476,7 @@
     <div class="music-status" id="music-status">Musik dimatikan</div>
     
     <!-- Slide Indicator -->
-    <div class="slide-indicator" id="slide-indicator">Slide 1/2</div>
+    <div class="slide-indicator" id="slide-indicator">Slide 1/3</div>
     
     <!-- Slider Navigation -->
     <div class="slider-nav">
@@ -2295,6 +3485,9 @@
         </button>
         <button class="slider-nav-btn" id="slide-2-btn">
             <i class="fas fa-th-large"></i>
+        </button>
+        <button class="slider-nav-btn" id="slide-3-btn">
+            <i class="fas fa-cogs"></i>
         </button>
     </div>
     
@@ -2359,9 +3552,14 @@
                         
                         <a href="mailto:almajidnafi@gmail.com" class="btn">
                             <i class="fas fa-envelope"></i>
-                                <span class="btn-text">Email</span>
+                            <span class="btn-text">Email</span>
                         </a>
-                        
+
+                        <a href="https://github.com/NaraToMajid" class="btn" target="_blank">
+                            <i class="fab fa-github"></i>
+                            <span class="btn-text">GitHub</span>
+                        </a>
+
                         <!-- New Buttons -->
                         <button class="btn" id="programming-btn">
                             <i class="fas fa-code"></i>
@@ -2518,6 +3716,172 @@
                     </div>
                 </main>
             </div>
+            
+            <!-- NEW: Slide 3: Coming Soon -->
+            <div class="slide" id="slide-3">
+                <main class="content">
+                    <section class="profile-section">
+                        <h1 class="slide-3-title scroll-reveal">New Features & Games</h1>
+                        <p class="bio scroll-reveal">Akses fitur baru dan kumpulan mini games seru!</p>
+                    </section>
+                    
+                    <div class="slide-3-content">
+                        <!-- Mini Games Section -->
+                        <h2 class="music-section-title scroll-reveal">Mini Games Collection</h2>
+                        
+                        <div class="games-container scroll-reveal">
+                            <!-- Game 1: Reaction Time Test -->
+                            <div class="game-card">
+                                <div class="game-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <h3 class="game-title">Reaction Time Test</h3>
+                                <p class="game-desc">Tes seberapa cepat reaksi Anda dengan mengklik saat warna berubah</p>
+                                <button class="play-game-btn" data-game="reaction">
+                                    <i class="fas fa-play"></i> Mainkan
+                                </button>
+                            </div>
+                            
+                            <!-- Game 2: Tebak Angka -->
+                            <div class="game-card">
+                                <div class="game-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <h3 class="game-title">Tebak Angka</h3>
+                                <p class="game-desc">Tebak angka 1-100 dengan clue dari komputer</p>
+                                <button class="play-game-btn" data-game="number">
+                                    <i class="fas fa-play"></i> Mainkan
+                                </button>
+                            </div>
+                            
+                            <!-- Game 3: Memory Card -->
+                            <div class="game-card">
+                                <div class="game-icon">
+                                    <i class="fas fa-memory"></i>
+                                </div>
+                                <h3 class="game-title">Memory Card</h3>
+                                <p class="game-desc">Temukan pasangan kartu dengan mengingat posisinya</p>
+                                <button class="play-game-btn" data-game="memory">
+                                    <i class="fas fa-play"></i> Mainkan
+                                </button>
+                            </div>
+                            
+                            <!-- Game 4: Tic-Tac-Toe -->
+                            <div class="game-card">
+                                <div class="game-icon">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                                <h3 class="game-title">Tic-Tac-Toe</h3>
+                                <p class="game-desc">Mainkan XO klasik melawan teman atau komputer</p>
+                                <button class="play-game-btn" data-game="tic-tac-toe">
+                                    <i class="fas fa-play"></i> Mainkan
+                                </button>
+                            </div>
+                            
+                            <!-- Game 5: Typing Speed Test -->
+                            <div class="game-card">
+                                <div class="game-icon">
+                                    <i class="fas fa-keyboard"></i>
+                                </div>
+                                <h3 class="game-title">Typing Speed Test</h3>
+                                <p class="game-desc">Ukur kecepatan mengetik Anda dalam WPM</p>
+                                <button class="play-game-btn" data-game="typing">
+                                    <i class="fas fa-play"></i> Mainkan
+                                </button>
+                            </div>
+                            
+                            <!-- Game 6: Trivia Quiz -->
+                            <div class="game-card">
+                                <div class="game-icon">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <h3 class="game-title">Trivia Quiz</h3>
+                                <p class="game-desc">Jawab pertanyaan pengetahuan umum</p>
+                                <button class="play-game-btn" data-game="trivia">
+                                    <i class="fas fa-play"></i> Mainkan
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Leaderboard -->
+                        <h2 class="music-section-title scroll-reveal" style="margin-top: 3rem;">Leaderboard</h2>
+                        <div class="leaderboard-container scroll-reveal">
+                            <table class="leaderboard-table" id="leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Username</th>
+                                        <th>Game</th>
+                                        <th>Score</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboard-body">
+                                    <!-- Leaderboard data akan dimuat di sini -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- New Features Section -->
+                        <h2 class="music-section-title scroll-reveal" style="margin-top: 3rem;">New Features</h2>
+                        
+                        <div class="features-list">
+                            <div class="feature-item scroll-reveal">
+                                <div class="feature-icon">
+                                    <i class="fas fa-gamepad"></i>
+                                </div>
+                                <h3 class="feature-title">Mini Games</h3>
+                                <p class="feature-desc">Koleksi mini games seru yang bisa dimainkan langsung di website.</p>
+                            </div>
+                            
+                            <div class="feature-item scroll-reveal">
+                                <div class="feature-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h3 class="feature-title">File Sharing</h3>
+                                <p class="feature-desc">Upload dan share file hingga 20MB secara aman.</p>
+                            </div>
+                            
+                            <div class="feature-item scroll-reveal">
+                                <div class="feature-icon">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <h3 class="feature-title">Video Conference</h3>
+                                <p class="feature-desc">Video call dan meeting langsung di website tanpa install aplikasi.</p>
+                            </div>
+                            
+                            <div class="feature-item scroll-reveal">
+                                <div class="feature-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <h3 class="feature-title">AI Assistant</h3>
+                                <p class="feature-desc">Asisten AI pribadi yang bisa membantu berbagai kebutuhan.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="request-buttons scroll-reveal" style="margin-top: 3rem;">
+                            <button class="request-btn" id="file-sharing-btn">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>File Sharing</span>
+                            </button>
+                            
+                            <button class="request-btn" id="video-call-btn">
+                                <i class="fas fa-video"></i>
+                                <span>Video Conference</span>
+                            </button>
+                            
+                            <button class="request-btn" id="ai-assistant-btn">
+                                <i class="fas fa-robot"></i>
+                                <span>AI Assistant</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="footer scroll-reveal">
+                        <p>&copy; 2025 Al'Majid. All rights reserved. | Slide 3: New Features & Games</p>
+                    </div>
+                </main>
+            </div>
         </div>
     </div>
     
@@ -2536,7 +3900,7 @@
         </div>
     </div>
     
-    <!-- NEW: Chatbox Modal - DIPERBAIKI -->
+    <!-- NEW: Chatbox Modal -->
     <div class="modal chatbox-modal" id="chatbox-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2833,6 +4197,379 @@
         </div>
     </div>
     
+    <!-- NEW: Game Login Modal -->
+    <div class="modal auth-modal" id="game-login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Login untuk Bermain Games</h2>
+                <button class="close-modal" id="close-game-login">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="auth-form" id="login-form">
+                <input type="text" class="auth-input" id="login-username" placeholder="Username" required>
+                <input type="password" class="auth-input" id="login-password" placeholder="Password" required>
+                <button class="auth-btn" id="login-btn">Login</button>
+                <div class="auth-switch">
+                    Belum punya akun? <span class="auth-link" id="show-register">Daftar di sini</span>
+                </div>
+            </div>
+            <div class="auth-form" id="register-form" style="display: none;">
+                <input type="text" class="auth-input" id="register-username" placeholder="Username" required>
+                <input type="password" class="auth-input" id="register-password" placeholder="Password" required>
+                <input type="password" class="auth-input" id="register-confirm-password" placeholder="Konfirmasi Password" required>
+                <button class="auth-btn" id="register-btn">Daftar</button>
+                <div class="auth-switch">
+                    Sudah punya akun? <span class="auth-link" id="show-login">Login di sini</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: Game Modals -->
+    <div class="modal game-modal" id="reaction-game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Reaction Time Test</h2>
+                <button class="close-modal" id="close-reaction-game">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-screen">
+                <div class="game-instructions">
+                    Klik kotak saat berubah warna hijau! Jangan klik terlalu cepat.
+                </div>
+                <div class="reaction-box waiting" id="reaction-box">
+                    Tunggu...
+                </div>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="reaction-score">0</div>
+                        <div class="stat-label">Reaksi (ms)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="reaction-best">0</div>
+                        <div class="stat-label">Terbaik</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="reaction-tries">0</div>
+                        <div class="stat-label">Percobaan</div>
+                    </div>
+                </div>
+                <button class="play-game-btn" id="start-reaction">Mulai Test</button>
+
+                <div class="game-leaderboard" id="reaction-leaderboard">
+                    <h4 style="color: #4a6cf7; margin: 1rem 0 0.5rem;">Leaderboard Reaction Test</h4>
+                    <div class="leaderboard-container" style="max-height: 200px;">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Username</th>
+                                    <th>Score</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reaction-leaderboard-body">
+                                <!-- Per-game leaderboard will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal game-modal" id="number-game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Tebak Angka</h2>
+                <button class="close-modal" id="close-number-game">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-screen">
+                <div class="game-instructions" id="number-instructions">
+                    Komputer telah memilih angka antara 1-100. Coba tebak!
+                </div>
+                <input type="number" class="number-input" id="number-guess" min="1" max="100" placeholder="Masukkan tebakan (1-100)">
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="number-attempts">0</div>
+                        <div class="stat-label">Percobaan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="number-hint">-</div>
+                        <div class="stat-label">Petunjuk</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="number-best">0</div>
+                        <div class="stat-label">Skor Terbaik</div>
+                    </div>
+                </div>
+                <button class="play-game-btn" id="submit-guess">Tebak!</button>
+                <button class="play-game-btn" id="new-number-game" style="margin-top: 10px;">Game Baru</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal game-modal" id="memory-game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Memory Card Game</h2>
+                <button class="close-modal" id="close-memory-game">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-screen">
+                <div class="game-instructions" id="memory-instructions">
+                    Temukan semua pasangan kartu! Klik dua kartu untuk membalik.
+                </div>
+                <div class="memory-grid" id="memory-grid">
+                    <!-- Memory cards will be generated here -->
+                </div>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="memory-moves">0</div>
+                        <div class="stat-label">Gerakan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="memory-matches">0</div>
+                        <div class="stat-label">Pasangan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="memory-time">0</div>
+                        <div class="stat-label">Waktu (s)</div>
+                    </div>
+                </div>
+                <button class="play-game-btn" id="new-memory-game">Game Baru</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal game-modal" id="tic-tac-toe-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Tic-Tac-Toe</h2>
+                <button class="close-modal" id="close-tic-tac-toe">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-screen">
+                <div class="game-instructions" id="ttt-instructions">
+                    Giliran: <span id="current-player">X</span> (Anda adalah X)
+                </div>
+                <div class="tic-tac-toe-grid" id="tic-tac-toe-grid">
+                    <!-- Tic-tac-toe cells will be generated here -->
+                </div>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="ttt-wins">0</div>
+                        <div class="stat-label">Menang</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="ttt-losses">0</div>
+                        <div class="stat-label">Kalah</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="ttt-draws">0</div>
+                        <div class="stat-label">Seri</div>
+                    </div>
+                </div>
+                <button class="play-game-btn" id="new-ttt-game">Game Baru</button>
+                <button class="play-game-btn" id="ttt-vs-computer" style="margin-top: 10px;">Lawan Komputer</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal game-modal" id="typing-game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Typing Speed Test</h2>
+                <button class="close-modal" id="close-typing-game">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-screen">
+                <div class="game-instructions" id="typing-instructions">
+                    Ketik teks di bawah secepat dan seakurat mungkin!
+                </div>
+                <div class="typing-text" id="typing-text-display">
+                    <!-- Text to type will appear here -->
+                </div>
+                <input type="text" class="typing-input" id="typing-input" placeholder="Ketik di sini...">
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="typing-wpm">0</div>
+                        <div class="stat-label">WPM</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="typing-accuracy">100%</div>
+                        <div class="stat-label">Akurasi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="typing-time">60</div>
+                        <div class="stat-label">Waktu</div>
+                    </div>
+                </div>
+                <button class="play-game-btn" id="start-typing">Mulai Test</button>
+                <button class="play-game-btn" id="new-typing-text" style="margin-top: 10px;">Teks Baru</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal game-modal" id="trivia-game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Trivia Quiz</h2>
+                <button class="close-modal" id="close-trivia-game">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-screen">
+                <div class="game-instructions" id="trivia-instructions">
+                    Jawab pertanyaan berikut dengan benar!
+                </div>
+                <div class="trivia-question" id="trivia-question">
+                    <!-- Question will appear here -->
+                </div>
+                <div class="trivia-options" id="trivia-options">
+                    <!-- Options will appear here -->
+                </div>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="trivia-score">0</div>
+                        <div class="stat-label">Skor</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="trivia-question-number">1/10</div>
+                        <div class="stat-label">Pertanyaan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="trivia-best">0</div>
+                        <div class="stat-label">Terbaik</div>
+                    </div>
+                </div>
+                <button class="play-game-btn" id="next-trivia" style="display: none;">Lanjut</button>
+                <button class="play-game-btn" id="new-trivia-game">Game Baru</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: File Sharing Modal -->
+    <div class="modal" id="file-sharing-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">File Sharing</h2>
+                <button class="close-modal" id="close-file-sharing">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="file-sharing-container">
+                <div class="file-upload-area" id="file-upload-area">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #4a6cf7; margin-bottom: 1rem;"></i>
+                    <h3>Upload File</h3>
+                    <p>Drag & drop file di sini atau klik untuk memilih file</p>
+                    <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); margin-top: 0.5rem;">
+                        Maksimal 20MB per file
+                    </p>
+                    <input type="file" id="file-input" style="display: none;">
+                </div>
+                
+                <div class="file-list" id="file-list">
+                    <!-- Uploaded files will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: Video Conference Modal -->
+    <div class="modal" id="video-conference-modal">
+        <div class="modal-content" style="width: 95%; max-width: 1200px; height: 90vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">Video Conference</h2>
+                <button class="close-modal" id="close-video-conference">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="video-call-container">
+                <div class="video-grid" id="video-grid">
+                    <div class="video-item">
+                        <video id="local-video" autoplay muted class="video-player"></video>
+                        <div class="video-info">
+                            Anda (Local)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="call-controls">
+                    <button class="call-btn" id="toggle-mic">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="call-btn" id="toggle-camera">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="call-btn" id="toggle-screen">
+                        <i class="fas fa-desktop"></i>
+                    </button>
+                    <button class="call-btn end-call" id="end-call">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                </div>
+                
+                <div class="chat-container" id="video-chat">
+                    <div class="chatbox-messages" id="video-chat-messages">
+                        <!-- Video chat messages will appear here -->
+                    </div>
+                    <div class="chatbox-input-container">
+                        <input type="text" class="chatbox-input" id="video-chat-input" placeholder="Tulis pesan...">
+                        <button class="chatbox-send" id="video-chat-send">Kirim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: AI Assistant Modal -->
+    <div class="modal" id="ai-assistant-modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 class="modal-title">AI Assistant</h2>
+                <button class="close-modal" id="close-ai-assistant">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ai-assistant-container">
+                <div class="ai-messages" id="ai-messages">
+                    <div class="ai-message assistant">
+                        <p>Halo! Saya AI Assistant. Saya bisa membantu Anda mengenal website ini lebih baik. Anda bisa bertanya tentang:</p>
+                        <ul>
+                            <li>Fitur-fitur yang tersedia</li>
+                            <li>Cara menggunakan website</li>
+                            <li>Tentang pemilik website</li>
+                            <li>Tips dan trik</li>
+                            <li>Dan banyak lagi!</li>
+                        </ul>
+                        <p>Apa yang bisa saya bantu?</p>
+                    </div>
+                </div>
+
+                <div class="ai-question-choices" id="ai-question-choices">
+                    <button class="ai-question-btn" data-question="fitur">Apa saja fitur yang tersedia?</button>
+                    <button class="ai-question-btn" data-question="cara">Cara menggunakan website ini?</button>
+                    <button class="ai-question-btn" data-question="pemilik">Siapa pemilik website ini?</button>
+                    <button class="ai-question-btn" data-question="games">Bagaimana cara bermain games?</button>
+                    <button class="ai-question-btn" data-question="kontak">Bagaimana cara menghubungi?</button>
+                </div>
+
+                <div class="ai-input-container">
+                    <input type="text" class="ai-input" id="ai-input" placeholder="Tanyakan sesuatu tentang website ini...">
+                    <button class="ai-send-btn" id="ai-send">Kirim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Background Music -->
     <audio id="background-music" loop>
         <source src="musik.mp3" type="audio/mpeg">
@@ -2846,8 +4583,14 @@
     
     <!-- Particle.js Library -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- PeerJS for Video Conference -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     
     <script>
+        // ==============================
+        // DOM Elements & State Variables
+        // ==============================
+        
         // DOM Elements
         const loadingScreen = document.getElementById('loading-screen');
         const loadingPercentage = document.getElementById('loading-percentage');
@@ -2892,6 +4635,7 @@
         const sliderWrapper = document.getElementById('slider-wrapper');
         const slide1Btn = document.getElementById('slide-1-btn');
         const slide2Btn = document.getElementById('slide-2-btn');
+        const slide3Btn = document.getElementById('slide-3-btn');
         const slideIndicator = document.getElementById('slide-indicator');
         const musicPlayerContainer = document.getElementById('music-player-container');
         const requestMusicBtn = document.getElementById('request-music-btn');
@@ -2917,7 +4661,7 @@
         const youtubeSearchInput = document.getElementById('youtube-search');
         const youtubeSearchBtn = document.getElementById('youtube-search-btn');
         
-        // NEW: Upgrade DOM Elements - DIPERBAIKI
+        // NEW: Upgrade DOM Elements
         const announcementBtn = document.getElementById('announcement-btn');
         const announcementModal = document.getElementById('announcement-modal');
         const closeAnnouncementBtn = document.getElementById('close-announcement');
@@ -2938,6 +4682,77 @@
         
         const parallaxLayer1 = document.getElementById('parallax-layer-1');
         const parallaxLayer2 = document.getElementById('parallax-layer-2');
+        
+        
+        // NEW: Online Badge Elements
+        const onlineBadge = document.getElementById('online-badge');
+        const statusContainer = document.getElementById('status-container');
+        const statusText = document.getElementById('status-text');
+        
+        // NEW: Slide 3 Elements
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const fileSharingBtn = document.getElementById('file-sharing-btn');
+        const videoCallBtn = document.getElementById('video-call-btn');
+        const aiAssistantBtn = document.getElementById('ai-assistant-btn');
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        
+        // NEW: Game Elements
+        const gameLoginModal = document.getElementById('game-login-modal');
+        const closeGameLoginBtn = document.getElementById('close-game-login');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const showRegisterLink = document.getElementById('show-register');
+        const showLoginLink = document.getElementById('show-login');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const loginUsername = document.getElementById('login-username');
+        const loginPassword = document.getElementById('login-password');
+        const registerUsername = document.getElementById('register-username');
+        const registerPassword = document.getElementById('register-password');
+        const registerConfirmPassword = document.getElementById('register-confirm-password');
+        
+        // Game modals
+        const reactionGameModal = document.getElementById('reaction-game-modal');
+        const numberGameModal = document.getElementById('number-game-modal');
+        const memoryGameModal = document.getElementById('memory-game-modal');
+        const ticTacToeModal = document.getElementById('tic-tac-toe-modal');
+        const typingGameModal = document.getElementById('typing-game-modal');
+        const triviaGameModal = document.getElementById('trivia-game-modal');
+        
+        const closeReactionGameBtn = document.getElementById('close-reaction-game');
+        const closeNumberGameBtn = document.getElementById('close-number-game');
+        const closeMemoryGameBtn = document.getElementById('close-memory-game');
+        const closeTicTacToeBtn = document.getElementById('close-tic-tac-toe');
+        const closeTypingGameBtn = document.getElementById('close-typing-game');
+        const closeTriviaGameBtn = document.getElementById('close-trivia-game');
+        
+        // NEW: File Sharing Elements
+        const fileSharingModal = document.getElementById('file-sharing-modal');
+        const closeFileSharingBtn = document.getElementById('close-file-sharing');
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        
+        // NEW: Video Conference Elements
+        const videoConferenceModal = document.getElementById('video-conference-modal');
+        const closeVideoConferenceBtn = document.getElementById('close-video-conference');
+        const videoGrid = document.getElementById('video-grid');
+        const localVideo = document.getElementById('local-video');
+        const toggleMicBtn = document.getElementById('toggle-mic');
+        const toggleCameraBtn = document.getElementById('toggle-camera');
+        const toggleScreenBtn = document.getElementById('toggle-screen');
+        const endCallBtn = document.getElementById('end-call');
+        const videoChatMessages = document.getElementById('video-chat-messages');
+        const videoChatInput = document.getElementById('video-chat-input');
+        const videoChatSendBtn = document.getElementById('video-chat-send');
+        
+        // NEW: AI Assistant Elements
+        const aiAssistantModal = document.getElementById('ai-assistant-modal');
+        const closeAiAssistantBtn = document.getElementById('close-ai-assistant');
+        const aiMessages = document.getElementById('ai-messages');
+        const aiInput = document.getElementById('ai-input');
+        const aiSendBtn = document.getElementById('ai-send');
         
         // State variables
         let isDarkMode = true;
@@ -2980,6 +4795,123 @@
         let userChatName = '';
         let chatMessageCounter = 0;
         
+        
+        // NEW: Online Status State
+        let onlineStatus = 'online';
+        let statusMessages = [
+            'Available',
+            'Coding...',
+            'Designing...',
+            'Listening to music',
+            'Taking a break',
+            'Working on new features',
+            'Available for chat'
+        ];
+        let statusIndex = 0;
+        
+        // NEW: Game State
+        let currentUser = null;
+        let gameScores = {};
+        let currentGame = null;
+        
+        // Reaction Game State
+        let reactionStartTime = 0;
+        let reactionGameActive = false;
+        let reactionBestTime = 0;
+        let reactionTries = 0;
+        
+        // Number Game State
+        let targetNumber = 0;
+        let numberAttempts = 0;
+        let numberBestScore = localStorage.getItem('numberBestScore') || 0;
+        
+        // Memory Game State
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let memoryMoves = 0;
+        let memoryStartTime = 0;
+        let memoryTimer = null;
+        
+        // Tic-Tac-Toe State
+        let tttBoard = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let tttGameActive = true;
+        let tttWins = 0;
+        let tttLosses = 0;
+        let tttDraws = 0;
+        let tttVsComputer = false;
+        
+        // Typing Game State
+        let typingTexts = [
+            "The quick brown fox jumps over the lazy dog",
+            "Programming is the process of creating a set of instructions that tell a computer how to perform a task",
+            "JavaScript is a versatile programming language used for web development",
+            "Practice makes perfect when it comes to improving typing speed",
+            "Web development involves both frontend and backend technologies"
+        ];
+        let currentTypingText = '';
+        let typingStartTime = 0;
+        let typingTimer = null;
+        let typingTimeLeft = 60;
+        let typingCorrectChars = 0;
+        let typingTotalChars = 0;
+        
+        // Trivia Game State
+        let triviaQuestions = [
+            {
+                question: "Apa ibukota Indonesia?",
+                options: ["Jakarta", "Surabaya", "Bandung", "Medan"],
+                answer: 0
+            },
+            {
+                question: "Siapa presiden pertama Indonesia?",
+                options: ["Soeharto", "Joko Widodo", "Soekarno", "BJ Habibie"],
+                answer: 2
+            },
+            {
+                question: "Planet terdekat dengan matahari?",
+                options: ["Venus", "Mars", "Mercury", "Bumi"],
+                answer: 2
+            },
+            {
+                question: "Warna pelangi pertama?",
+                options: ["Merah", "Kuning", "Ungu", "Hijau"],
+                answer: 0
+            },
+            {
+                question: "Hewan tercepat di darat?",
+                options: ["Singa", "Cheetah", "Harimau", "Rusa"],
+                answer: 1
+            }
+        ];
+        let currentTriviaIndex = 0;
+        let triviaScore = 0;
+        let triviaBestScore = localStorage.getItem('triviaBestScore') || 0;
+        
+        // NEW: File Sharing State
+        let uploadedFiles = [];
+        
+        // NEW: Video Conference State
+        let peer = null;
+        let localStream = null;
+        let connections = [];
+        let roomId = null;
+        let isMicOn = true;
+        let isCameraOn = true;
+        let isScreenSharing = false;
+        
+        // NEW: AI Assistant State
+        const aiResponses = {
+            "fitur": "Website ini memiliki banyak fitur menarik: Portfolio pribadi, Mini Games, File Sharing, Video Conference, AI Assistant, Chatbox, dan banyak lagi!",
+            "cara menggunakan": "Anda bisa navigasi menggunakan tombol slide di bawah. Setiap slide memiliki konten berbeda. Klik tombol untuk membuka fitur yang diinginkan.",
+            "pemilik": "Website ini dibuat oleh Al'Majid, seorang UI/UX Designer dan Website Programmer yang passionate tentang coding dan design.",
+            "games": "Tersedia 6 mini games: Reaction Time Test, Tebak Angka, Memory Card, Tic-Tac-Toe, Typing Speed Test, dan Trivia Quiz.",
+            "kontak": "Anda bisa menghubungi Al'Majid melalui WhatsApp, Instagram, TikTok, Facebook, atau Email. Lihat tombol di slide pertama.",
+            "teknologi": "Website ini dibangun dengan HTML, CSS, JavaScript, Firebase untuk database, dan berbagai library pendukung.",
+            "tentang": "Website portfolio ini dibuat untuk showcase skill dan project Al'Majid. Juga sebagai tempat interaksi dan hiburan untuk pengunjung."
+        };
+        
         // Music tracks data
         const musicTracks = [
             {
@@ -3021,130 +4953,57 @@
                 artist: 'Nama_Artis5',
                 title: 'Judul_Lagu5',
                 isAvailable: false
-            },
-            {
-                id: 6,
-                image: 'fotolagu6.jpg',
-                audio: 'musiklagu6.mp3',
-                artist: 'Nama_Artis6',
-                title: 'Judul_Lagu6',
-                isAvailable: false
-            },
-            {
-                id: 7,
-                image: 'fotolagu7.jpg',
-                audio: 'musiklagu7.mp3',
-                artist: 'Nama_Artis7',
-                title: 'Judul_Lagu7',
-                isAvailable: false
-            },
-            {
-                id: 8,
-                image: 'fotolagu8.jpg',
-                audio: 'musiklagu8.mp3',
-                artist: 'Nama_Artis8',
-                title: 'Judul_Lagu8',
-                isAvailable: false
-            },
-            {
-                id: 9,
-                image: 'fotolagu9.jpg',
-                audio: 'musiklagu9.mp3',
-                artist: 'Nama_Artis9',
-                title: 'Judul_Lagu9',
-                isAvailable: false
-            },
-            {
-                id: 10,
-                image: 'fotolagu10.jpg',
-                audio: 'musiklagu10.mp3',
-                artist: 'Nama_Artis10',
-                title: 'Judul_Lagu10',
-                isAvailable: false
-            },
-            {
-                id: 11,
-                image: 'fotolagu11.jpg',
-                audio: 'musiklagu11.mp3',
-                artist: 'Nama_Artis11',
-                title: 'Judul_Lagu11',
-                isAvailable: false
-            },
-            {
-                id: 12,
-                image: 'fotolagu12.jpg',
-                audio: 'musiklagu12.mp3',
-                artist: 'Nama_Artis12',
-                title: 'Judul_Lagu12',
-                isAvailable: false
-            },
-            {
-                id: 13,
-                image: 'fotolagu13.jpg',
-                audio: 'musiklagu13.mp3',
-                artist: 'Nama_Artis13',
-                title: 'Judul_Lagu13',
-                isAvailable: false
-            },
-            {
-                id: 14,
-                image: 'fotolagu14.jpg',
-                audio: 'musiklagu14.mp3',
-                artist: 'Nama_Artis14',
-                title: 'Judul_Lagu14',
-                isAvailable: false
-            },
-            {
-                id: 15,
-                image: 'fotolagu15.jpg',
-                audio: 'musiklagu15.mp3',
-                artist: 'Nama_Artis15',
-                title: 'Judul_Lagu15',
-                isAvailable: false
-            },
-            {
-                id: 16,
-                image: 'fotolagu16.jpg',
-                audio: 'musiklagu16.mp3',
-                artist: 'Nama_Artis16',
-                title: 'Judul_Lagu16',
-                isAvailable: false
-            },
-            {
-                id: 17,
-                image: 'fotolagu17.jpg',
-                audio: 'musiklagu17.mp3',
-                artist: 'Nama_Artis17',
-                title: 'Judul_Lagu17',
-                isAvailable: false
-            },
-            {
-                id: 18,
-                image: 'fotolagu18.jpg',
-                audio: 'musiklagu18.mp3',
-                artist: 'Nama_Artis18',
-                title: 'Judul_Lagu18',
-                isAvailable: false
-            },
-            {
-                id: 19,
-                image: 'fotolagu19.jpg',
-                audio: 'musiklagu19.mp3',
-                artist: 'Nama_Artis19',
-                title: 'Judul_Lagu19',
-                isAvailable: false
-            },
-            {
-                id: 20,
-                image: 'fotolagu20.jpg',
-                audio: 'musiklagu20.mp3',
-                artist: 'Nama_Artis20',
-                title: 'Judul_Lagu20',
-                isAvailable: false
             }
         ];
         
-        // NEW: Initialize Parallax Effect
+        
+        // ==============================
+        // NEW: Online Status Functions
+        // ==============================
+        
+        function initOnlineStatus() {
+            // Show online badge with animation
+            setTimeout(() => {
+                onlineBadge.style.animation = 'fadeInUp 0.8s ease forwards';
+                onlineBadge.style.opacity = '1';
+                onlineBadge.style.transform = 'translateY(0)';
+                
+                // Show status after a delay
+                setTimeout(() => {
+                    statusContainer.style.display = 'block';
+                    statusContainer.style.animation = 'fadeInUp 0.8s ease forwards';
+                    statusContainer.style.opacity = '1';
+                    statusContainer.style.transform = 'translateY(0)';
+                    
+                    // Start status rotation
+                    rotateStatusMessages();
+                }, 1000);
+            }, 1500);
+            
+            // Make badge clickable
+            onlineBadge.addEventListener('click', () => {
+                statusContainer.style.display = statusContainer.style.display === 'block' ? 'none' : 'block';
+            });
+        }
+        
+        // NEW: Rotate Status Messages
+        function rotateStatusMessages() {
+            setInterval(() => {
+                statusIndex = (statusIndex + 1) % statusMessages.length;
+                statusText.textContent = statusMessages[statusIndex];
+                
+                // Add animation
+                statusContainer.style.animation = 'none';
+                setTimeout(() => {
+                    statusContainer.style.animation = 'fadeInUp 0.5s ease';
+                }, 10);
+            }, 5000); // Change every 5 seconds
+        }
+        
+        // ==============================
+        // NEW: Parallax Effect Functions
+        // ==============================
+        
         function initParallax() {
             document.addEventListener('mousemove', (e) => {
                 const x = (e.clientX / window.innerWidth) * 100;
@@ -3167,7 +5026,10 @@
             });
         }
         
-        // NEW: Initialize Random Quotes for Loading Screen
+        // ==============================
+        // NEW: Random Quotes Functions
+        // ==============================
+        
         function initRandomQuotes() {
             const randomIndex = Math.floor(Math.random() * quotes.length);
             loadingQuote.textContent = `"${quotes[randomIndex]}"`;
@@ -3186,7 +5048,10 @@
             }, 3000);
         }
         
-        // NEW: Initialize Real-time Clock
+        // ==============================
+        // NEW: Real-time Clock Functions
+        // ==============================
+        
         function initClock() {
             function updateClock() {
                 const now = new Date();
@@ -3211,7 +5076,10 @@
             setInterval(updateClock, 1000);
         }
         
-        // NEW: Initialize Announcements System
+        // ==============================
+        // NEW: Announcements Functions
+        // ==============================
+        
         function initAnnouncements() {
             const defaultAnnouncements = [
                 {
@@ -3223,7 +5091,7 @@
                 {
                     id: 2,
                     date: "09/12/2025",
-                    text: "Fitur baru: Komiku Reader!",
+                    text: "Fitur baru: Mini Games Collection!",
                     isNew: true
                 },
                 {
@@ -3235,7 +5103,7 @@
                 {
                     id: 4,
                     date: "05/12/2025",
-                    text: "Tambahan 20 lagu baru di playlist",
+                    text: "Tambahan 5 lagu baru di playlist",
                     isNew: false
                 },
                 {
@@ -3243,6 +5111,36 @@
                     date: "01/12/2025",
                     text: "Sistem chatbox realtime telah aktif",
                     isNew: false
+                },
+                {
+                    id: 6,
+                    date: "11/12/2025",
+                    text: "Fitur AI Assistant dengan pertanyaan cepat!",
+                    isNew: true
+                },
+                {
+                    id: 7,
+                    date: "11/12/2025",
+                    text: "File Sharing hingga 20MB sekarang tersedia!",
+                    isNew: true
+                },
+                {
+                    id: 8,
+                    date: "11/12/2025",
+                    text: "Video Conference untuk meeting online!",
+                    isNew: true
+                },
+                {
+                    id: 9,
+                    date: "11/12/2025",
+                    text: "Leaderboard global dan per-minigame!",
+                    isNew: true
+                },
+                {
+                    id: 10,
+                    date: "11/12/2025",
+                    text: "SEO metadata ditambahkan untuk visibilitas Google!",
+                    isNew: true
                 }
             ];
             
@@ -3302,7 +5200,7 @@
                 const newAnnouncement = {
                     id: announcements.length + 1,
                     date: new Date().toLocaleDateString('id-ID'),
-                    text: "Update terbaru: Efek parallax dan real-time chat!",
+                    text: "Update terbaru: 6 Mini Games baru dan Video Conference!",
                     isNew: true
                 };
                 
@@ -3329,7 +5227,10 @@
             }
         }
         
-        // NEW: Initialize Chatbox System with Firebase - DIPERBAIKI
+        // ==============================
+        // NEW: Chatbox Functions
+        // ==============================
+        
         function initChatbox() {
             // Load user name from localStorage
             const savedName = localStorage.getItem('chatUserName');
@@ -3437,7 +5338,7 @@
             }
         }
         
-        // NEW: Send Message - DIPERBAIKI
+        // NEW: Send Message
         function sendMessage() {
             const messageText = chatboxInput.value.trim();
             
@@ -3571,7 +5472,7 @@
             }
         }
         
-        // NEW: Render Chat Messages - DIPERBAIKI
+        // NEW: Render Chat Messages
         function renderChatMessages() {
             chatboxMessages.innerHTML = '';
             
@@ -3648,7 +5549,1298 @@
             }
         }
         
-        // Initialize Particles.js
+        // ==============================
+        // NEW: Game Functions
+        // ==============================
+        
+        function initGames() {
+            // Setup game login modal
+            showRegisterLink.addEventListener('click', () => {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            });
+            
+            showLoginLink.addEventListener('click', () => {
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            });
+            
+            loginBtn.addEventListener('click', handleLogin);
+            registerBtn.addEventListener('click', handleRegister);
+            
+            // Load leaderboard
+            loadLeaderboard();
+            
+            // Setup game buttons
+            document.querySelectorAll('.play-game-btn[data-game]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const game = btn.getAttribute('data-game');
+                    if (!currentUser) {
+                        currentGame = game;
+                        openModal(gameLoginModal);
+                    } else {
+                        startGame(game);
+                    }
+                });
+            });
+            
+            // Setup game-specific event listeners
+            setupReactionGame();
+            setupNumberGame();
+            setupMemoryGame();
+            setupTicTacToe();
+            setupTypingGame();
+            setupTriviaGame();
+        }
+        
+        function handleLogin() {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value;
+            
+            if (!username || !password) {
+                showNotification('Harap isi semua field');
+                return;
+            }
+            
+            const savedUser = localStorage.getItem(`game_user_${username}`);
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                if (user.password === password) {
+                    currentUser = user;
+                    showNotification(`Selamat datang kembali, ${username}!`);
+                    closeModal(gameLoginModal);
+                    startGame(currentGame);
+                    loginUsername.value = '';
+                    loginPassword.value = '';
+                } else {
+                    showNotification('Password salah!');
+                }
+            } else {
+                showNotification('Username tidak ditemukan!');
+            }
+        }
+        
+        function handleRegister() {
+            const username = registerUsername.value.trim();
+            const password = registerPassword.value;
+            const confirmPassword = registerConfirmPassword.value;
+            
+            if (!username || !password || !confirmPassword) {
+                showNotification('Harap isi semua field');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showNotification('Password tidak cocok!');
+                return;
+            }
+            
+            if (localStorage.getItem(`game_user_${username}`)) {
+                showNotification('Username sudah digunakan!');
+                return;
+            }
+            
+            const user = {
+                username,
+                password,
+                scores: {}
+            };
+            
+            localStorage.setItem(`game_user_${username}`, JSON.stringify(user));
+            currentUser = user;
+            
+            showNotification(`Akun berhasil dibuat! Selamat bermain, ${username}!`);
+            closeModal(gameLoginModal);
+            startGame(currentGame);
+            
+            registerUsername.value = '';
+            registerPassword.value = '';
+            registerConfirmPassword.value = '';
+        }
+        
+        function startGame(game) {
+            switch(game) {
+                case 'reaction':
+                    openModal(reactionGameModal);
+                    loadGameLeaderboard('reaction', 'reaction-leaderboard-body');
+                    break;
+                case 'number':
+                    openModal(numberGameModal);
+                    break;
+                case 'memory':
+                    openModal(memoryGameModal);
+                    break;
+                case 'tic-tac-toe':
+                    openModal(ticTacToeModal);
+                    break;
+                case 'typing':
+                    openModal(typingGameModal);
+                    break;
+                case 'trivia':
+                    openModal(triviaGameModal);
+                    break;
+            }
+        }
+        
+        function saveGameScore(game, score) {
+            if (!currentUser) return;
+            
+            const userKey = `game_user_${currentUser.username}`;
+            const user = JSON.parse(localStorage.getItem(userKey));
+            
+            if (!user.scores) user.scores = {};
+            if (!user.scores[game] || score > user.scores[game]) {
+                user.scores[game] = score;
+                localStorage.setItem(userKey, JSON.stringify(user));
+                
+                // Save to leaderboard
+                saveToLeaderboard(game, score);
+            }
+            
+            // Update current user
+            currentUser.scores = user.scores;
+        }
+        
+        function saveToLeaderboard(game, score) {
+            const leaderboardEntry = {
+                username: currentUser.username,
+                game: game,
+                score: score,
+                date: new Date().toLocaleDateString('id-ID')
+            };
+            
+            // Save to localStorage
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            leaderboard.push(leaderboardEntry);
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 50); // Keep top 50
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            
+            // Save to Firebase if available
+            if (window.firebaseDatabase) {
+                try {
+                    const database = window.firebaseDatabase;
+                    const leaderboardRef = window.firebaseRef(database, 'leaderboard');
+                    window.firebasePush(leaderboardRef, leaderboardEntry);
+                } catch (error) {
+                    console.error('Firebase save error:', error);
+                }
+            }
+            
+            // Update leaderboard display
+            loadLeaderboard();
+        }
+        
+        function loadLeaderboard() {
+            leaderboardBody.innerHTML = '';
+
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+
+            if (leaderboard.length === 0) {
+                leaderboardBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            Belum ada skor di leaderboard. Jadilah yang pertama!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Group by username and get best score for each user
+            const userBestScores = {};
+            leaderboard.forEach(entry => {
+                if (!userBestScores[entry.username] || entry.score > userBestScores[entry.username].score) {
+                    userBestScores[entry.username] = entry;
+                }
+            });
+
+            const globalLeaderboard = Object.values(userBestScores).sort((a, b) => b.score - a.score);
+
+            globalLeaderboard.slice(0, 10).forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.className = `rank-${index + 1}`;
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.username}</td>
+                    <td>Global</td>
+                    <td>${entry.score}</td>
+                    <td>${entry.date}</td>
+                `;
+
+                leaderboardBody.appendChild(row);
+            });
+        }
+
+        function loadGameLeaderboard(game, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            const gameEntries = leaderboard.filter(entry => entry.game === game).sort((a, b) => b.score - a.score);
+
+            if (gameEntries.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 1rem;">
+                            Belum ada skor untuk game ini
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            gameEntries.slice(0, 5).forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.className = `rank-${index + 1}`;
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.username}</td>
+                    <td>${entry.score}</td>
+                    <td>${entry.date}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+        
+        function getGameName(gameKey) {
+            const gameNames = {
+                'reaction': 'Reaction Test',
+                'number': 'Tebak Angka',
+                'memory': 'Memory Card',
+                'tic-tac-toe': 'Tic-Tac-Toe',
+                'typing': 'Typing Test',
+                'trivia': 'Trivia Quiz'
+            };
+            return gameNames[gameKey] || gameKey;
+        }
+        
+        // ==============================
+        // Game-Specific Functions
+        // ==============================
+        
+        // Reaction Game
+        function setupReactionGame() {
+            const reactionBox = document.getElementById('reaction-box');
+            const startBtn = document.getElementById('start-reaction');
+            const scoreDisplay = document.getElementById('reaction-score');
+            const bestDisplay = document.getElementById('reaction-best');
+            const triesDisplay = document.getElementById('reaction-tries');
+            
+            startBtn.addEventListener('click', () => {
+                reactionGameActive = true;
+                reactionBox.className = 'reaction-box waiting';
+                reactionBox.textContent = 'Tunggu...';
+                startBtn.disabled = true;
+                
+                const waitTime = Math.random() * 3000 + 1000; // 1-4 seconds
+                
+                setTimeout(() => {
+                    if (reactionGameActive) {
+                        reactionBox.className = 'reaction-box ready';
+                        reactionBox.textContent = 'KLIK SEKARANG!';
+                        reactionStartTime = Date.now();
+                    }
+                }, waitTime);
+            });
+            
+            reactionBox.addEventListener('click', () => {
+                if (!reactionGameActive || reactionBox.className !== 'reaction-box ready') {
+                    reactionBox.className = 'reaction-box too-fast';
+                    reactionBox.textContent = 'Terlalu cepat!';
+                    setTimeout(() => {
+                        reactionBox.className = 'reaction-box waiting';
+                        reactionBox.textContent = 'Tunggu...';
+                        startBtn.disabled = false;
+                    }, 1000);
+                    return;
+                }
+                
+                const reactionTime = Date.now() - reactionStartTime;
+                reactionGameActive = false;
+                reactionTries++;
+                
+                scoreDisplay.textContent = reactionTime;
+                triesDisplay.textContent = reactionTries;
+                
+                if (reactionBestTime === 0 || reactionTime < reactionBestTime) {
+                    reactionBestTime = reactionTime;
+                    bestDisplay.textContent = reactionBestTime;
+                    saveGameScore('reaction', 10000 - reactionTime); // Higher score for faster times
+                }
+                
+                reactionBox.className = 'reaction-box waiting';
+                reactionBox.textContent = `Reaksi: ${reactionTime}ms`;
+                startBtn.disabled = false;
+                
+                // Save score
+                saveGameScore('reaction', 10000 - reactionTime);
+            });
+        }
+        
+        // Number Game
+        function setupNumberGame() {
+            const guessInput = document.getElementById('number-guess');
+            const submitBtn = document.getElementById('submit-guess');
+            const newGameBtn = document.getElementById('new-number-game');
+            const attemptsDisplay = document.getElementById('number-attempts');
+            const hintDisplay = document.getElementById('number-hint');
+            const bestDisplay = document.getElementById('number-best');
+            
+            function newGame() {
+                targetNumber = Math.floor(Math.random() * 100) + 1;
+                numberAttempts = 0;
+                attemptsDisplay.textContent = numberAttempts;
+                hintDisplay.textContent = '-';
+                guessInput.value = '';
+                guessInput.disabled = false;
+                submitBtn.disabled = false;
+                document.getElementById('number-instructions').textContent = 
+                    'Komputer telah memilih angka antara 1-100. Coba tebak!';
+                console.log('Target number:', targetNumber); // For debugging
+            }
+            
+            newGameBtn.addEventListener('click', newGame);
+            
+            submitBtn.addEventListener('click', () => {
+                const guess = parseInt(guessInput.value);
+                
+                if (isNaN(guess) || guess < 1 || guess > 100) {
+                    showNotification('Masukkan angka antara 1-100!');
+                    return;
+                }
+                
+                numberAttempts++;
+                attemptsDisplay.textContent = numberAttempts;
+                
+                if (guess === targetNumber) {
+                    hintDisplay.textContent = 'TEPAT!';
+                    guessInput.disabled = true;
+                    submitBtn.disabled = true;
+                    
+                    const score = Math.max(1, 100 - numberAttempts * 5);
+                    if (score > numberBestScore) {
+                        numberBestScore = score;
+                        bestDisplay.textContent = numberBestScore;
+                        localStorage.setItem('numberBestScore', numberBestScore);
+                    }
+                    
+                    saveGameScore('number', score);
+                    showNotification(`Selamat! Anda menebak dalam ${numberAttempts} percobaan. Skor: ${score}`);
+                    
+                } else if (guess < targetNumber) {
+                    hintDisplay.textContent = 'TERLALU RENDAH';
+                    guessInput.value = '';
+                    guessInput.focus();
+                } else {
+                    hintDisplay.textContent = 'TERLALU TINGGI';
+                    guessInput.value = '';
+                    guessInput.focus();
+                }
+            });
+            
+            guessInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                }
+            });
+            
+            newGame();
+        }
+        
+        // Memory Game
+        function setupMemoryGame() {
+            const memoryGrid = document.getElementById('memory-grid');
+            const newGameBtn = document.getElementById('new-memory-game');
+            const movesDisplay = document.getElementById('memory-moves');
+            const matchesDisplay = document.getElementById('memory-matches');
+            const timeDisplay = document.getElementById('memory-time');
+            
+            const symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            
+            function newGame() {
+                memoryGrid.innerHTML = '';
+                memoryCards = [...symbols, ...symbols];
+                memoryCards.sort(() => Math.random() - 0.5);
+                flippedCards = [];
+                matchedPairs = 0;
+                memoryMoves = 0;
+                memoryStartTime = Date.now();
+                
+                movesDisplay.textContent = memoryMoves;
+                matchesDisplay.textContent = matchedPairs;
+                
+                clearInterval(memoryTimer);
+                memoryTimer = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - memoryStartTime) / 1000);
+                    timeDisplay.textContent = elapsed;
+                }, 1000);
+                
+                memoryCards.forEach((symbol, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'memory-card';
+                    card.dataset.symbol = symbol;
+                    card.dataset.index = index;
+                    
+                    card.addEventListener('click', () => {
+                        if (flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) {
+                            return;
+                        }
+                        
+                        card.classList.add('flipped');
+                        card.textContent = symbol;
+                        flippedCards.push(card);
+                        
+                        if (flippedCards.length === 2) {
+                            memoryMoves++;
+                            movesDisplay.textContent = memoryMoves;
+                            
+                            const [card1, card2] = flippedCards;
+                            
+                            if (card1.dataset.symbol === card2.dataset.symbol) {
+                                card1.classList.add('matched');
+                                card2.classList.add('matched');
+                                matchedPairs++;
+                                matchesDisplay.textContent = matchedPairs;
+                                flippedCards = [];
+                                
+                                if (matchedPairs === symbols.length) {
+                                    clearInterval(memoryTimer);
+                                    const elapsed = Math.floor((Date.now() - memoryStartTime) / 1000);
+                                    const score = Math.max(1, 1000 - memoryMoves * 10 - elapsed);
+                                    saveGameScore('memory', score);
+                                    showNotification(`Selamat! Anda menyelesaikan dalam ${memoryMoves} gerakan dan ${elapsed} detik. Skor: ${score}`);
+                                }
+                            } else {
+                                setTimeout(() => {
+                                    card1.classList.remove('flipped');
+                                    card2.classList.remove('flipped');
+                                    card1.textContent = '';
+                                    card2.textContent = '';
+                                    flippedCards = [];
+                                }, 1000);
+                            }
+                        }
+                    });
+                    
+                    memoryGrid.appendChild(card);
+                });
+            }
+            
+            newGameBtn.addEventListener('click', newGame);
+            newGame();
+        }
+        
+        // Tic-Tac-Toe Game
+        function setupTicTacToe() {
+            const tttGrid = document.getElementById('tic-tac-toe-grid');
+            const newGameBtn = document.getElementById('new-ttt-game');
+            const vsComputerBtn = document.getElementById('ttt-vs-computer');
+            const currentPlayerDisplay = document.getElementById('current-player');
+            const winsDisplay = document.getElementById('ttt-wins');
+            const lossesDisplay = document.getElementById('ttt-losses');
+            const drawsDisplay = document.getElementById('ttt-draws');
+            
+            function newGame(vsComputer = false) {
+                tttGrid.innerHTML = '';
+                tttBoard = ['', '', '', '', '', '', '', '', ''];
+                currentPlayer = 'X';
+                tttGameActive = true;
+                tttVsComputer = vsComputer;
+                
+                currentPlayerDisplay.textContent = currentPlayer;
+                
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'ttt-cell';
+                    cell.dataset.index = i;
+                    
+                    cell.addEventListener('click', () => {
+                        if (!tttGameActive || tttBoard[i] !== '') {
+                            return;
+                        }
+                        
+                        makeMove(i, 'X');
+                        
+                        if (tttVsComputer && tttGameActive) {
+                            setTimeout(() => {
+                                makeComputerMove();
+                            }, 500);
+                        }
+                    });
+                    
+                    tttGrid.appendChild(cell);
+                }
+            }
+            
+            function makeMove(index, player) {
+                tttBoard[index] = player;
+                const cell = document.querySelector(`.ttt-cell[data-index="${index}"]`);
+                cell.textContent = player;
+                cell.classList.add(player.toLowerCase());
+                
+                if (checkWin(player)) {
+                    tttGameActive = false;
+                    if (player === 'X') {
+                        tttWins++;
+                        winsDisplay.textContent = tttWins;
+                        saveGameScore('tic-tac-toe', 100);
+                        showNotification('Anda menang!');
+                    } else {
+                        tttLosses++;
+                        lossesDisplay.textContent = tttLosses;
+                        showNotification('Komputer menang!');
+                    }
+                    return;
+                }
+                
+                if (checkDraw()) {
+                    tttGameActive = false;
+                    tttDraws++;
+                    drawsDisplay.textContent = tttDraws;
+                    saveGameScore('tic-tac-toe', 50);
+                    showNotification('Permainan seri!');
+                    return;
+                }
+                
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                currentPlayerDisplay.textContent = currentPlayer;
+            }
+            
+            function makeComputerMove() {
+                if (!tttGameActive) return;
+                
+                // Simple AI: Try to win, block, or random
+                let move = findWinningMove('O');
+                if (move === -1) move = findWinningMove('X'); // Block
+                if (move === -1) {
+                    // Random move
+                    const emptyCells = tttBoard.map((cell, index) => cell === '' ? index : -1).filter(i => i !== -1);
+                    move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                }
+                
+                if (move !== -1) {
+                    makeMove(move, 'O');
+                }
+            }
+            
+            function findWinningMove(player) {
+                const winPatterns = [
+                    [0,1,2], [3,4,5], [6,7,8], // Rows
+                    [0,3,6], [1,4,7], [2,5,8], // Columns
+                    [0,4,8], [2,4,6] // Diagonals
+                ];
+                
+                for (const pattern of winPatterns) {
+                    const [a,b,c] = pattern;
+                    const cells = [tttBoard[a], tttBoard[b], tttBoard[c]];
+                    
+                    if (cells.filter(cell => cell === player).length === 2 && cells.includes('')) {
+                        return pattern[cells.indexOf('')];
+                    }
+                }
+                
+                return -1;
+            }
+            
+            function checkWin(player) {
+                const winPatterns = [
+                    [0,1,2], [3,4,5], [6,7,8],
+                    [0,3,6], [1,4,7], [2,5,8],
+                    [0,4,8], [2,4,6]
+                ];
+                
+                return winPatterns.some(pattern => {
+                    const [a,b,c] = pattern;
+                    return tttBoard[a] === player && tttBoard[b] === player && tttBoard[c] === player;
+                });
+            }
+            
+            function checkDraw() {
+                return tttBoard.every(cell => cell !== '');
+            }
+            
+            newGameBtn.addEventListener('click', () => newGame(false));
+            vsComputerBtn.addEventListener('click', () => newGame(true));
+            newGame(false);
+        }
+        
+        // Typing Game
+        function setupTypingGame() {
+            const typingTextDisplay = document.getElementById('typing-text-display');
+            const typingInput = document.getElementById('typing-input');
+            const startBtn = document.getElementById('start-typing');
+            const newTextBtn = document.getElementById('new-typing-text');
+            const wpmDisplay = document.getElementById('typing-wpm');
+            const accuracyDisplay = document.getElementById('typing-accuracy');
+            const timeDisplay = document.getElementById('typing-time');
+            
+            function newText() {
+                currentTypingText = typingTexts[Math.floor(Math.random() * typingTexts.length)];
+                typingTextDisplay.textContent = currentTypingText;
+                typingInput.value = '';
+                typingInput.disabled = true;
+                typingCorrectChars = 0;
+                typingTotalChars = 0;
+                wpmDisplay.textContent = '0';
+                accuracyDisplay.textContent = '100%';
+                timeDisplay.textContent = '60';
+            }
+            
+            function startGame() {
+                if (!currentTypingText) newText();
+                
+                typingInput.disabled = false;
+                typingInput.focus();
+                typingStartTime = Date.now();
+                typingTimeLeft = 60;
+                
+                clearInterval(typingTimer);
+                typingTimer = setInterval(() => {
+                    typingTimeLeft--;
+                    timeDisplay.textContent = typingTimeLeft;
+                    
+                    if (typingTimeLeft <= 0) {
+                        endTypingGame();
+                    }
+                }, 1000);
+                
+                startBtn.disabled = true;
+                newTextBtn.disabled = true;
+            }
+            
+            function endTypingGame() {
+                clearInterval(typingTimer);
+                typingInput.disabled = true;
+                startBtn.disabled = false;
+                newTextBtn.disabled = false;
+                
+                const elapsedMinutes = (60 - typingTimeLeft) / 60;
+                const wpm = Math.round((typingCorrectChars / 5) / elapsedMinutes);
+                const accuracy = typingTotalChars === 0 ? 100 : Math.round((typingCorrectChars / typingTotalChars) * 100);
+                
+                wpmDisplay.textContent = wpm;
+                accuracyDisplay.textContent = accuracy + '%';
+                
+                const score = wpm * accuracy;
+                saveGameScore('typing', score);
+                showNotification(`Game selesai! WPM: ${wpm}, Akurasi: ${accuracy}%, Skor: ${score}`);
+            }
+            
+            typingInput.addEventListener('input', () => {
+                if (!typingTimer) return;
+                
+                const input = typingInput.value;
+                typingTotalChars = input.length;
+                
+                // Count correct characters
+                let correct = 0;
+                for (let i = 0; i < input.length; i++) {
+                    if (i < currentTypingText.length && input[i] === currentTypingText[i]) {
+                        correct++;
+                    }
+                }
+                typingCorrectChars = correct;
+                
+                // Update WPM and accuracy
+                const elapsedMinutes = (60 - typingTimeLeft) / 60;
+                const wpm = Math.round((correct / 5) / elapsedMinutes);
+                const accuracy = typingTotalChars === 0 ? 100 : Math.round((correct / typingTotalChars) * 100);
+                
+                wpmDisplay.textContent = wpm;
+                accuracyDisplay.textContent = accuracy + '%';
+                
+                // Check if text is complete
+                if (input === currentTypingText) {
+                    endTypingGame();
+                }
+            });
+            
+            startBtn.addEventListener('click', startGame);
+            newTextBtn.addEventListener('click', newText);
+            newText();
+        }
+        
+        // Trivia Game
+        function setupTriviaGame() {
+            const questionDisplay = document.getElementById('trivia-question');
+            const optionsDisplay = document.getElementById('trivia-options');
+            const nextBtn = document.getElementById('next-trivia');
+            const newGameBtn = document.getElementById('new-trivia-game');
+            const scoreDisplay = document.getElementById('trivia-score');
+            const questionNumDisplay = document.getElementById('trivia-question-number');
+            const bestDisplay = document.getElementById('trivia-best');
+            
+            function newGame() {
+                currentTriviaIndex = 0;
+                triviaScore = 0;
+                scoreDisplay.textContent = triviaScore;
+                bestDisplay.textContent = triviaBestScore;
+                nextBtn.style.display = 'none';
+                loadQuestion();
+            }
+            
+            function loadQuestion() {
+                if (currentTriviaIndex >= triviaQuestions.length) {
+                    endTriviaGame();
+                    return;
+                }
+                
+                const question = triviaQuestions[currentTriviaIndex];
+                questionDisplay.textContent = question.question;
+                questionNumDisplay.textContent = `${currentTriviaIndex + 1}/${triviaQuestions.length}`;
+                
+                optionsDisplay.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const optionBtn = document.createElement('div');
+                    optionBtn.className = 'trivia-option';
+                    optionBtn.textContent = option;
+                    optionBtn.dataset.index = index;
+                    
+                    optionBtn.addEventListener('click', () => {
+                        if (nextBtn.style.display === 'block') return;
+                        
+                        const isCorrect = parseInt(optionBtn.dataset.index) === question.answer;
+                        
+                        if (isCorrect) {
+                            triviaScore += 10;
+                            scoreDisplay.textContent = triviaScore;
+                            optionBtn.classList.add('correct');
+                        } else {
+                            optionBtn.classList.add('incorrect');
+                            // Highlight correct answer
+                            document.querySelector(`.trivia-option[data-index="${question.answer}"]`).classList.add('correct');
+                        }
+                        
+                        // Disable all options
+                        document.querySelectorAll('.trivia-option').forEach(opt => {
+                            opt.style.pointerEvents = 'none';
+                        });
+                        
+                        nextBtn.style.display = 'block';
+                    });
+                    
+                    optionsDisplay.appendChild(optionBtn);
+                });
+            }
+            
+            function endTriviaGame() {
+                questionDisplay.textContent = `Game selesai! Skor akhir: ${triviaScore}`;
+                optionsDisplay.innerHTML = '';
+                nextBtn.style.display = 'none';
+                
+                if (triviaScore > triviaBestScore) {
+                    triviaBestScore = triviaScore;
+                    bestDisplay.textContent = triviaBestScore;
+                    localStorage.setItem('triviaBestScore', triviaBestScore);
+                }
+                
+                saveGameScore('trivia', triviaScore);
+                showNotification(`Trivia Quiz selesai! Skor: ${triviaScore}`);
+            }
+            
+            nextBtn.addEventListener('click', () => {
+                currentTriviaIndex++;
+                nextBtn.style.display = 'none';
+                loadQuestion();
+            });
+            
+            newGameBtn.addEventListener('click', newGame);
+            newGame();
+        }
+        
+        // ==============================
+        // NEW: File Sharing Functions
+        // ==============================
+        
+        function initFileSharing() {
+            fileUploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // Drag and drop
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.add('dragover');
+            });
+            
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.classList.remove('dragover');
+            });
+            
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFileUpload({ target: { files: e.dataTransfer.files } });
+                }
+            });
+            
+            loadFiles();
+        }
+        
+        function handleFileUpload(e) {
+            const files = Array.from(e.target.files);
+            
+            files.forEach(file => {
+                if (file.size > 20 * 1024 * 1024) { // 20MB limit
+                    showNotification(`File ${file.name} terlalu besar (max 20MB)`);
+                    return;
+                }
+                
+                // Simulate upload
+                uploadedFiles.push({
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: formatFileSize(file.size),
+                    type: file.type,
+                    url: URL.createObjectURL(file),
+                    date: new Date().toLocaleDateString('id-ID')
+                });
+                
+                saveFiles();
+                renderFiles();
+                showNotification(`File ${file.name} berhasil diupload`);
+            });
+            
+            fileInput.value = '';
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        function saveFiles() {
+            localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+        }
+        
+        function loadFiles() {
+            const savedFiles = localStorage.getItem('uploadedFiles');
+            if (savedFiles) {
+                uploadedFiles = JSON.parse(savedFiles);
+                renderFiles();
+            }
+        }
+        
+        function renderFiles() {
+            fileList.innerHTML = '';
+            
+            if (uploadedFiles.length === 0) {
+                fileList.innerHTML = `
+                    <div style="text-align: center; color: rgba(255,255,255,0.6); padding: 2rem;">
+                        Belum ada file yang diupload
+                    </div>
+                `;
+                return;
+            }
+            
+            uploadedFiles.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const icon = getFileIcon(file.type);
+                
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${file.size} • ${file.date}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="file-action-btn download-btn" data-id="${file.id}">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn delete-btn" data-id="${file.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                fileList.appendChild(fileItem);
+            });
+            
+            // Add event listeners for buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const fileId = e.target.closest('.download-btn').dataset.id;
+                    const file = uploadedFiles.find(f => f.id == fileId);
+                    if (file) {
+                        const a = document.createElement('a');
+                        a.href = file.url;
+                        a.download = file.name;
+                        a.click();
+                        showNotification(`Mengunduh ${file.name}`);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const fileId = e.target.closest('.delete-btn').dataset.id;
+                    if (confirm('Apakah Anda yakin ingin menghapus file ini?')) {
+                        uploadedFiles = uploadedFiles.filter(f => f.id != fileId);
+                        saveFiles();
+                        renderFiles();
+                        showNotification('File berhasil dihapus');
+                    }
+                });
+            });
+        }
+        
+        function getFileIcon(fileType) {
+            if (fileType.includes('image')) return 'fas fa-file-image';
+            if (fileType.includes('pdf')) return 'fas fa-file-pdf';
+            if (fileType.includes('word') || fileType.includes('document')) return 'fas fa-file-word';
+            if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fas fa-file-excel';
+            if (fileType.includes('video')) return 'fas fa-file-video';
+            if (fileType.includes('audio')) return 'fas fa-file-audio';
+            return 'fas fa-file';
+        }
+        
+        // ==============================
+        // NEW: Video Conference Functions
+        // ==============================
+        
+        function initVideoConference() {
+            // Generate random room ID
+            roomId = 'room-' + Math.random().toString(36).substr(2, 9);
+            
+            toggleMicBtn.addEventListener('click', toggleMic);
+            toggleCameraBtn.addEventListener('click', toggleCamera);
+            toggleScreenBtn.addEventListener('click', toggleScreenShare);
+            endCallBtn.addEventListener('click', endCall);
+            videoChatSendBtn.addEventListener('click', sendVideoChatMessage);
+            videoChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendVideoChatMessage();
+            });
+            
+            // Initialize PeerJS
+            if (typeof Peer !== 'undefined') {
+                peer = new Peer(roomId + '-local');
+                
+                peer.on('open', (id) => {
+                    console.log('Peer connected with ID:', id);
+                    showNotification('Video conference siap! ID Room: ' + roomId);
+                });
+                
+                peer.on('call', (call) => {
+                    call.answer(localStream);
+                    call.on('stream', (remoteStream) => {
+                        addVideoStream(remoteStream, call.peer);
+                    });
+                });
+                
+                peer.on('connection', (conn) => {
+                    conn.on('data', (data) => {
+                        handleVideoChatMessage(data);
+                    });
+                });
+            } else {
+                console.warn('PeerJS not loaded, video conference will not work');
+            }
+        }
+        
+        async function startVideoConference() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                
+                localVideo.srcObject = localStream;
+                
+                // Add local video to grid
+                const localVideoItem = document.querySelector('.video-item');
+                localVideoItem.style.display = 'block';
+                
+                showNotification('Video conference dimulai!');
+                
+            } catch (error) {
+                console.error('Error accessing media devices:', error);
+                showNotification('Tidak dapat mengakses kamera/mikrofon');
+            }
+        }
+        
+        function toggleMic() {
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    audioTrack.enabled = !audioTrack.enabled;
+                    isMicOn = audioTrack.enabled;
+                    toggleMicBtn.innerHTML = `<i class="fas fa-microphone${isMicOn ? '' : '-slash'}"></i>`;
+                    showNotification(`Mikrofon ${isMicOn ? 'diaktifkan' : 'dimatikan'}`);
+                }
+            }
+        }
+        
+        function toggleCamera() {
+            if (localStream) {
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.enabled = !videoTrack.enabled;
+                    isCameraOn = videoTrack.enabled;
+                    toggleCameraBtn.innerHTML = `<i class="fas fa-video${isCameraOn ? '' : '-slash'}"></i>`;
+                    showNotification(`Kamera ${isCameraOn ? 'diaktifkan' : 'dimatikan'}`);
+                }
+            }
+        }
+        
+        async function toggleScreenShare() {
+            if (!isScreenSharing) {
+                try {
+                    const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                        video: true
+                    });
+                    
+                    // Replace video track
+                    const videoTrack = screenStream.getVideoTracks()[0];
+                    const sender = localStream.getVideoTracks()[0];
+                    if (sender) {
+                        localStream.removeTrack(sender);
+                        localStream.addTrack(videoTrack);
+                        localVideo.srcObject = localStream;
+                        
+                        // Update connections
+                        connections.forEach(conn => {
+                            if (conn.peerConnection) {
+                                const videoSender = conn.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                                if (videoSender) {
+                                    videoSender.replaceTrack(videoTrack);
+                                }
+                            }
+                        });
+                    }
+                    
+                    isScreenSharing = true;
+                    toggleScreenBtn.classList.add('active');
+                    showNotification('Screen sharing diaktifkan');
+                    
+                    // Handle when user stops sharing
+                    videoTrack.onended = () => {
+                        toggleScreenShare();
+                    };
+                    
+                } catch (error) {
+                    console.error('Error sharing screen:', error);
+                }
+            } else {
+                // Switch back to camera
+                try {
+                    const cameraStream = await navigator.mediaDevices.getUserMedia({
+                        video: true
+                    });
+                    
+                    const cameraTrack = cameraStream.getVideoTracks()[0];
+                    const sender = localStream.getVideoTracks()[0];
+                    if (sender) {
+                        localStream.removeTrack(sender);
+                        localStream.addTrack(cameraTrack);
+                        localVideo.srcObject = localStream;
+                        
+                        // Update connections
+                        connections.forEach(conn => {
+                            if (conn.peerConnection) {
+                                const videoSender = conn.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                                if (videoSender) {
+                                    videoSender.replaceTrack(cameraTrack);
+                                }
+                            }
+                        });
+                    }
+                    
+                    isScreenSharing = false;
+                    toggleScreenBtn.classList.remove('active');
+                    showNotification('Screen sharing dimatikan');
+                    
+                } catch (error) {
+                    console.error('Error switching to camera:', error);
+                }
+            }
+        }
+        
+        function addVideoStream(stream, peerId) {
+            const videoItem = document.createElement('div');
+            videoItem.className = 'video-item';
+            
+            const video = document.createElement('video');
+            video.className = 'video-player';
+            video.autoplay = true;
+            video.playsInline = true;
+            video.srcObject = stream;
+            
+            const videoInfo = document.createElement('div');
+            videoInfo.className = 'video-info';
+            videoInfo.textContent = `User ${peerId.substring(0, 8)}`;
+            
+            videoItem.appendChild(video);
+            videoItem.appendChild(videoInfo);
+            videoGrid.appendChild(videoItem);
+        }
+        
+        function sendVideoChatMessage() {
+            const message = videoChatInput.value.trim();
+            if (!message) return;
+            
+            const messageData = {
+                type: 'chat',
+                sender: 'Anda',
+                message: message,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            // Display locally
+            addVideoChatMessage(messageData);
+            
+            // Send to connections
+            connections.forEach(conn => {
+                if (conn.dataConnection) {
+                    conn.dataConnection.send(messageData);
+                }
+            });
+            
+            videoChatInput.value = '';
+        }
+        
+        function handleVideoChatMessage(data) {
+            if (data.type === 'chat') {
+                addVideoChatMessage(data);
+            }
+        }
+        
+        function addVideoChatMessage(data) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-item';
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <div class="message-name">${data.sender}</div>
+                    <div class="message-time">${data.timestamp}</div>
+                </div>
+                <div class="message-text">${data.message}</div>
+            `;
+            
+            videoChatMessages.appendChild(messageDiv);
+            videoChatMessages.scrollTop = videoChatMessages.scrollHeight;
+        }
+        
+        function endCall() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            
+            connections.forEach(conn => {
+                if (conn.close) conn.close();
+            });
+            
+            connections = [];
+            videoGrid.innerHTML = `
+                <div class="video-item">
+                    <video id="local-video" autoplay muted class="video-player"></video>
+                    <div class="video-info">
+                        Anda (Local)
+                    </div>
+                </div>
+            `;
+            
+            videoChatMessages.innerHTML = '';
+            localVideo.srcObject = null;
+            
+            closeModal(videoConferenceModal);
+            showNotification('Video conference diakhiri');
+        }
+        
+        // ==============================
+        // NEW: AI Assistant Functions
+        // ==============================
+        
+        function initAIAssistant() {
+            aiSendBtn.addEventListener('click', sendAIMessage);
+            aiInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendAIMessage();
+            });
+
+            // Handle question choice buttons
+            document.querySelectorAll('.ai-question-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const question = btn.getAttribute('data-question');
+                    aiInput.value = getQuestionText(question);
+                    sendAIMessage();
+                });
+            });
+        }
+
+        function getQuestionText(key) {
+            const questions = {
+                'fitur': 'Apa saja fitur yang tersedia di website ini?',
+                'cara': 'Bagaimana cara menggunakan website ini?',
+                'pemilik': 'Siapa pemilik website ini?',
+                'games': 'Bagaimana cara bermain mini games?',
+                'kontak': 'Bagaimana cara menghubungi Al\'Majid?'
+            };
+            return questions[key] || '';
+        }
+        
+        function sendAIMessage() {
+            const message = aiInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addAIMessage(message, 'user');
+            
+            // Get AI response
+            const response = getAIResponse(message.toLowerCase());
+            
+            // Simulate typing delay
+            setTimeout(() => {
+                addAIMessage(response, 'assistant');
+            }, 500);
+            
+            aiInput.value = '';
+        }
+        
+        function addAIMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            
+            aiMessages.appendChild(messageDiv);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+        
+        function getAIResponse(message) {
+            for (const [keyword, response] of Object.entries(aiResponses)) {
+                if (message.includes(keyword)) {
+                    return response;
+                }
+            }
+            
+            // Default responses
+            const defaultResponses = [
+                "Saya bisa membantu Anda mengenal website ini. Coba tanyakan tentang fitur, cara menggunakan, atau tentang pemilik website.",
+                "Maaf, saya tidak mengerti pertanyaan Anda. Coba tanyakan tentang fitur website ini.",
+                "Saya AI Assistant untuk website portfolio Al'Majid. Apa yang bisa saya bantu?",
+                "Anda bisa bertanya tentang berbagai fitur yang tersedia di website ini."
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+        
+        // ==============================
+        // NEW: Particles.js Functions
+        // ==============================
+        
         function initParticles() {
             if (typeof particlesJS !== 'undefined') {
                 particlesJS('particles-js', {
@@ -3772,7 +6964,10 @@
             }
         }
         
-        // Initialize Typing Effect
+        // ==============================
+        // NEW: Typing Effect Functions
+        // ==============================
+        
         function initTypingEffect() {
             function type() {
                 const currentText = typingTextArray[typingTextCurrent];
@@ -3802,7 +6997,10 @@
             setTimeout(type, 1000);
         }
         
-        // Initialize Scroll Reveal
+        // ==============================
+        // NEW: Scroll Reveal Functions
+        // ==============================
+        
         function initScrollReveal() {
             const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
             
@@ -3822,7 +7020,10 @@
             checkScroll();
         }
         
-        // Loading Animation - DIPERBAIKI
+        // ==============================
+        // Loading Animation Functions
+        // ==============================
+        
         function simulateLoading() {
             // Add loading class to body to prevent scrolling
             document.body.classList.add('loading');
@@ -3852,7 +7053,10 @@
             }, 100);
         }
         
-        // Show Oradev Intro - DIPERBAIKI
+        // ==============================
+        // Oradev Intro Functions
+        // ==============================
+        
         function showOradevIntro() {
             const logoContainer = document.querySelector('.oradev-logo-container');
             const oradevText = document.querySelector('.oradev-text');
@@ -3879,6 +7083,7 @@
                     initMusicTracks();
                     animateElements();
                     
+                    // Initialize all new features
                     initParticles();
                     initTypingEffect();
                     initScrollReveal();
@@ -3886,11 +7091,19 @@
                     initClock();
                     initAnnouncements();
                     initChatbox();
+                    initOnlineStatus();
+                    initGames(); // NEW: Initialize games
+                    initFileSharing(); // NEW: Initialize file sharing
+                    initVideoConference(); // NEW: Initialize video conference
+                    initAIAssistant(); // NEW: Initialize AI assistant
                 }, 800);
             }, 4000);
         }
         
-        // Animate elements with staggered delays
+        // ==============================
+        // Animation Functions
+        // ==============================
+        
         function animateElements() {
             const buttons = document.querySelectorAll('.btn');
             buttons.forEach((btn, index) => {
@@ -3925,10 +7138,11 @@
             
             if (currentSlide === 2) {
                 animateSlide2Elements();
+            } else if (currentSlide === 3) {
+                animateSlide3Elements();
             }
         }
         
-        // Animate Slide 2 elements
         function animateSlide2Elements() {
             const slide2Title = document.querySelector('.slide-2-title');
             const appBtns = document.querySelectorAll('.app-btn');
@@ -3977,7 +7191,49 @@
             }
         }
         
-        // Initialize music tracks
+        function animateSlide3Elements() {
+            const slide3Title = document.querySelector('.slide-3-title');
+            const gameCards = document.querySelectorAll('.game-card');
+            const featureItems = document.querySelectorAll('.feature-item');
+            const requestButtons = document.querySelector('.request-buttons');
+            
+            if (slide3Title) {
+                setTimeout(() => {
+                    slide3Title.style.animation = 'fadeInUp 0.8s ease forwards';
+                    slide3Title.style.opacity = '1';
+                    slide3Title.style.transform = 'translateY(0)';
+                }, 300);
+            }
+            
+            gameCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = 'fadeInUp 0.8s ease forwards';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 400 + (index * 100));
+            });
+            
+            featureItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.animation = 'fadeInUp 0.8s ease forwards';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 1000 + (index * 100));
+            });
+            
+            if (requestButtons) {
+                setTimeout(() => {
+                    requestButtons.style.animation = 'fadeInUp 0.8s ease forwards';
+                    requestButtons.style.opacity = '1';
+                    requestButtons.style.transform = 'translateY(0)';
+                }, 1600);
+            }
+        }
+        
+        // ==============================
+        // Music Functions
+        // ==============================
+        
         function initMusicTracks() {
             musicPlayerContainer.innerHTML = '';
             
@@ -4151,7 +7407,10 @@
             }
         }
         
-        // Jumpscare function
+        // ==============================
+        // Jumpscare Function
+        // ==============================
+        
         function triggerJumpscare() {
             stopAllMusic();
             
@@ -4177,7 +7436,10 @@
             }, 5000);
         }
         
-        // Theme Toggle
+        // ==============================
+        // Theme Toggle Function
+        // ==============================
+        
         themeToggle.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('light-mode', !isDarkMode);
@@ -4191,7 +7453,10 @@
             }
         });
         
-        // Check music file
+        // ==============================
+        // Music Control Functions
+        // ==============================
+        
         function checkMusicFile() {
             fetch('musik.mp3')
                 .then(response => {
@@ -4207,7 +7472,6 @@
                 });
         }
         
-        // Music Control
         musicControl.addEventListener('click', () => {
             if (!musicFileExists) return;
             
@@ -4256,22 +7520,44 @@
             musicControl.style.display = 'none';
         });
         
-        // Slide Navigation
+        // ==============================
+        // Slide Navigation Functions
+        // ==============================
+        
         function goToSlide(slideNumber) {
             currentSlide = slideNumber;
             
             if (slideNumber === 1) {
-                sliderWrapper.classList.remove('slide-2');
+                sliderWrapper.classList.remove('slide-2', 'slide-3');
                 slide1Btn.classList.add('active');
                 slide2Btn.classList.remove('active');
-                slideIndicator.textContent = 'Slide 1/2';
-            } else {
+                slide3Btn.classList.remove('active');
+                slideIndicator.textContent = 'Slide 1/3';
+            } else if (slideNumber === 2) {
                 sliderWrapper.classList.add('slide-2');
+                sliderWrapper.classList.remove('slide-3');
                 slide1Btn.classList.remove('active');
                 slide2Btn.classList.add('active');
-                slideIndicator.textContent = 'Slide 2/2';
+                slide3Btn.classList.remove('active');
+                slideIndicator.textContent = 'Slide 2/3';
                 
                 setTimeout(animateSlide2Elements, 300);
+                
+                setTimeout(() => {
+                    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+                    scrollRevealElements.forEach(element => {
+                        element.classList.add('revealed');
+                    });
+                }, 500);
+            } else if (slideNumber === 3) {
+                sliderWrapper.classList.add('slide-3');
+                sliderWrapper.classList.remove('slide-2');
+                slide1Btn.classList.remove('active');
+                slide2Btn.classList.remove('active');
+                slide3Btn.classList.add('active');
+                slideIndicator.textContent = 'Slide 3/3';
+                
+                setTimeout(animateSlide3Elements, 300);
                 
                 setTimeout(() => {
                     const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
@@ -4292,13 +7578,24 @@
             stopAllMusic();
         });
         
-        // Request Music Button
+        slide3Btn.addEventListener('click', () => {
+            goToSlide(3);
+            stopAllMusic();
+        });
+        
+        // ==============================
+        // Request Music Button Function
+        // ==============================
+        
         requestMusicBtn.addEventListener('click', () => {
             const message = encodeURIComponent(`https://almajid.vercel.app/\nbang, request lagu "judul"`);
             window.open(`https://wa.me/6283853185739?text=${message}`, '_blank');
         });
         
-        // Request Picture Button
+        // ==============================
+        // Request Picture Button Function
+        // ==============================
+        
         requestPictureBtn.addEventListener('click', () => {
             openGalleryRequestModal();
         });
@@ -4362,8 +7659,14 @@
             }, 100);
         }
         
+        // ==============================
         // Modal Management Functions
+        // ==============================
+        
         function openModal(modal) {
+            // Add modal-open class to body to prevent scrolling
+            document.body.classList.add('modal-open');
+            
             modal.style.display = 'flex';
             stopAllMusic();
             
@@ -4382,11 +7685,20 @@
                 
                 // Render messages when modal opens
                 renderChatMessages();
+            } else if (modal === videoConferenceModal) {
+                startVideoConference();
             }
         }
         
         function closeModal(modal) {
+            // Remove modal-open class from body to re-enable scrolling
+            document.body.classList.remove('modal-open');
+            
             modal.style.display = 'none';
+            
+            if (modal === videoConferenceModal) {
+                endCall();
+            }
         }
         
         function setupModalClose(modal, closeBtn) {
@@ -4398,13 +7710,22 @@
             });
         }
         
-        // Spotify Button
+        // ==============================
+        // Spotify Button Function
+        // ==============================
+        
         spotifyBtn.addEventListener('click', () => openModal(favsongModal));
         
-        // Programming Languages Button
+        // ==============================
+        // Programming Languages Button Function
+        // ==============================
+        
         programmingBtn.addEventListener('click', () => openModal(programmingModal));
         
-        // Favorite Person Button
+        // ==============================
+        // Favorite Person Button Function
+        // ==============================
+        
         favoritePersonBtn.addEventListener('click', () => {
             const imageExtensions = ['.jpeg', '.jpg', '.webp', '.png', '.gif'];
             let formatIndex = 0;
@@ -4430,7 +7751,10 @@
             openModal(favoritePersonModal);
         });
         
+        // ==============================
         // Gallery Management Functions
+        // ==============================
+        
         function getGalleryImages(type) {
             const galleries = {
                 'gallery': [
@@ -4581,10 +7905,16 @@
             openModal(galleryModal);
         });
         
-        // Favorite Musician Button
+        // ==============================
+        // Favorite Musician Button Function
+        // ==============================
+        
         favoriteMusicianBtn.addEventListener('click', () => openModal(favoriteMusicianModal));
         
-        // Embed Buttons
+        // ==============================
+        // Embed Buttons Functions
+        // ==============================
+        
         deepseekEmbedBtn.addEventListener('click', () => openModal(deepseekEmbedModal));
         youtubeEmbedBtn.addEventListener('click', () => openModal(youtubeEmbedModal));
         komikuEmbedBtn.addEventListener('click', () => openModal(komikuEmbedModal));
@@ -4605,9 +7935,17 @@
             }
         });
         
-        // NEW: Setup new modals
+        // ==============================
+        // NEW: Setup New Modals Functions
+        // ==============================
+        
         announcementBtn.addEventListener('click', () => openModal(announcementModal));
         chatboxBtn.addEventListener('click', () => openModal(chatboxModal));
+        
+        // NEW: Setup new feature buttons
+        fileSharingBtn.addEventListener('click', () => openModal(fileSharingModal));
+        videoCallBtn.addEventListener('click', () => openModal(videoConferenceModal));
+        aiAssistantBtn.addEventListener('click', () => openModal(aiAssistantModal));
         
         // Setup modal close events
         setupModalClose(favsongModal, closeFavsongBtn);
@@ -4622,14 +7960,38 @@
         setupModalClose(announcementModal, closeAnnouncementBtn);
         setupModalClose(chatboxModal, closeChatboxBtn);
         
+        // NEW: Setup game modal close events
+        setupModalClose(gameLoginModal, closeGameLoginBtn);
+        setupModalClose(reactionGameModal, closeReactionGameBtn);
+        setupModalClose(numberGameModal, closeNumberGameBtn);
+        setupModalClose(memoryGameModal, closeMemoryGameBtn);
+        setupModalClose(ticTacToeModal, closeTicTacToeBtn);
+        setupModalClose(typingGameModal, closeTypingGameBtn);
+        setupModalClose(triviaGameModal, closeTriviaGameBtn);
+        
+        // NEW: Setup new feature modal close events
+        setupModalClose(fileSharingModal, closeFileSharingBtn);
+        setupModalClose(videoConferenceModal, closeVideoConferenceBtn);
+        setupModalClose(aiAssistantModal, closeAiAssistantBtn);
+        
         closeGalleryBtn2.addEventListener('click', () => closeModal(galleryModal));
         closeGalleryRequestBtn2.addEventListener('click', () => closeModal(galleryRequestModal));
         
-        // Particles Toggle
+        // ==============================
+        // Particles Toggle Function
+        // ==============================
+        
         particlesToggle.addEventListener('click', toggleParticles);
         
-        // Add jumpscare event to profile image
+        // ==============================
+        // Jumpscare Event to Profile Image
+        // ==============================
+        
         profileImg.addEventListener('click', triggerJumpscare);
+        
+        // ==============================
+        // Hover Effects
+        // ==============================
         
         // Add hover effect to all buttons
         document.querySelectorAll('.btn').forEach(button => {
@@ -4677,7 +8039,10 @@
             });
         });
         
-        // Initialize loading on page load
+        // ==============================
+        // Initialize on Page Load
+        // ==============================
+        
         window.addEventListener('load', function() {
             simulateLoading();
             
@@ -4699,6 +8064,14 @@
             profileImg.onerror = tryNextProfileFormat;
             
             checkMusicFile();
+        });
+        
+        // ==============================
+        // NEW: Handle Window Resize for Responsive Design
+        // ==============================
+        
+        window.addEventListener('resize', () => {
+            // Handle resize if needed
         });
     </script>
 </body>
