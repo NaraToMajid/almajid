@@ -4599,8 +4599,6 @@
     
     <!-- Particle.js Library -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <!-- PeerJS for Video Conference -->
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     
     <script>
         // ==============================
@@ -4912,14 +4910,15 @@
         // NEW: File Sharing State
         let uploadedFiles = [];
         
-        // NEW: Video Conference State
-        let peer = null;
+        // NEW: Video Conference State (WebRTC with Firebase)
         let localStream = null;
-        let connections = [];
+        let peerConnection = null;
         let roomId = null;
         let isMicOn = true;
         let isCameraOn = true;
         let isScreenSharing = false;
+        let isInitiator = false;
+        let dataChannel = null;
         
         // NEW: AI Assistant State
         const aiResponses = {
@@ -6554,30 +6553,9 @@
                 if (e.key === 'Enter') joinRoom();
             });
 
-            // Initialize PeerJS
-            if (typeof Peer !== 'undefined') {
-                peer = new Peer(roomId + '-local');
-
-                peer.on('open', (id) => {
-                    console.log('Peer connected with ID:', id);
-                    showNotification('Video conference siap! ID Room: ' + roomId);
-                });
-
-                peer.on('call', (call) => {
-                    call.answer(localStream);
-                    call.on('stream', (remoteStream) => {
-                        addVideoStream(remoteStream, call.peer);
-                    });
-                });
-
-                peer.on('connection', (conn) => {
-                    conn.on('data', (data) => {
-                        handleVideoChatMessage(data);
-                    });
-                });
-            } else {
-                console.warn('PeerJS not loaded, video conference will not work');
-            }
+            // Initialize WebRTC
+            console.log('WebRTC video conference initialized with Firebase signaling');
+            showNotification('Video conference siap! ID Room: ' + roomId);
         }
 
         function joinRoom() {
@@ -6587,49 +6565,200 @@
                 return;
             }
 
-            if (peer) {
-                peer.destroy();
+            // Close existing connection
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
             }
 
             roomId = newRoomId;
             currentRoomIdDisplay.textContent = roomId;
 
-            // Reinitialize peer with new room
-            if (typeof Peer !== 'undefined') {
-                peer = new Peer(roomId + '-local');
-
-                peer.on('open', (id) => {
-                    console.log('Joined room:', roomId);
-                    showNotification('Bergabung ke room: ' + roomId);
-
-                    // Try to connect to other peers in the room
-                    connectToRoomPeers();
-                });
-
-                peer.on('call', (call) => {
-                    call.answer(localStream);
-                    call.on('stream', (remoteStream) => {
-                        addVideoStream(remoteStream, call.peer);
-                    });
-                });
-
-                peer.on('connection', (conn) => {
-                    conn.on('data', (data) => {
-                        handleVideoChatMessage(data);
-                    });
-                });
-            }
-
+            // Join the room
+            joinRoomWithWebRTC(roomId);
             roomIdInput.value = '';
         }
 
-        function connectToRoomPeers() {
-            // Note: For full global connectivity, a proper signaling server is needed
-            // The current implementation uses PeerJS public servers for basic peer discovery
-            console.log('Room joined:', roomId, '- Waiting for other peers to connect...');
+        async function joinRoomWithWebRTC(roomId) {
+            if (!window.firebaseDatabase) {
+                showNotification('Firebase tidak tersedia');
+                return;
+            }
 
-            // Show notification about connection status
-            showNotification('Room ' + roomId + ' siap! Tunggu orang lain join dengan ID yang sama');
+            const database = window.firebaseDatabase;
+            const roomRef = window.firebaseRef(database, `rooms/${roomId}`);
+
+            try {
+                // Check if room exists
+                const roomSnapshot = await window.firebaseGet(roomRef);
+                if (roomSnapshot.exists()) {
+                    // Room exists, join as second participant
+                    isInitiator = false;
+                    await joinExistingRoom(roomId);
+                } else {
+                    // Create new room
+                    isInitiator = true;
+                    await createRoom(roomId);
+                }
+            } catch (error) {
+                console.error('Error joining room:', error);
+                showNotification('Error joining room');
+            }
+        }
+
+        async function createRoom(roomId) {
+            console.log('Creating room:', roomId);
+            showNotification('Membuat room ' + roomId + '...');
+
+            const database = window.firebaseDatabase;
+            const roomRef = window.firebaseRef(database, `rooms/${roomId}`);
+
+            // Create peer connection
+            peerConnection = createPeerConnection(roomId);
+
+            // Add local stream if available
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+            }
+
+            // Create offer
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            // Save offer to Firebase
+            await window.firebaseSet(roomRef, {
+                offer: {
+                    type: offer.type,
+                    sdp: offer.sdp
+                },
+                createdAt: Date.now()
+            });
+
+            // Listen for answer
+            window.firebaseOnValue(window.firebaseRef(database, `rooms/${roomId}/answer`), (snapshot) => {
+                const answer = snapshot.val();
+                if (answer && !peerConnection.currentRemoteDescription) {
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                }
+            });
+
+            showNotification('Room ' + roomId + ' dibuat! Tunggu orang lain join');
+        }
+
+        async function joinExistingRoom(roomId) {
+            console.log('Joining existing room:', roomId);
+            showNotification('Bergabung ke room ' + roomId + '...');
+
+            const database = window.firebaseDatabase;
+            const roomRef = window.firebaseRef(database, `rooms/${roomId}`);
+
+            // Get offer from Firebase
+            const roomSnapshot = await window.firebaseGet(roomRef);
+            const roomData = roomSnapshot.val();
+
+            if (!roomData || !roomData.offer) {
+                showNotification('Room tidak valid');
+                return;
+            }
+
+            // Create peer connection
+            peerConnection = createPeerConnection(roomId);
+
+            // Add local stream if available
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+            }
+
+            // Set remote description (offer)
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(roomData.offer));
+
+            // Create answer
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+
+            // Save answer to Firebase
+            await window.firebaseSet(window.firebaseRef(database, `rooms/${roomId}/answer`), {
+                type: answer.type,
+                sdp: answer.sdp
+            });
+
+            showNotification('Berhasil bergabung ke room ' + roomId);
+        }
+
+        function createPeerConnection(roomId) {
+            const pc = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            });
+
+            // Handle ICE candidates
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    const database = window.firebaseDatabase;
+                    const candidateRef = window.firebaseRef(database, `rooms/${roomId}/candidates/${Date.now()}`);
+                    window.firebaseSet(candidateRef, {
+                        candidate: event.candidate.candidate,
+                        sdpMid: event.candidate.sdpMid,
+                        sdpMLineIndex: event.candidate.sdpMLineIndex
+                    });
+                }
+            };
+
+            // Handle remote stream
+            pc.ontrack = (event) => {
+                console.log('Received remote stream');
+                addVideoStream(event.streams[0], 'remote-peer');
+            };
+
+            // Handle data channel
+            pc.ondatachannel = (event) => {
+                dataChannel = event.channel;
+                setupDataChannel();
+            };
+
+            // Listen for ICE candidates from Firebase
+            const database = window.firebaseDatabase;
+            window.firebaseOnValue(window.firebaseRef(database, `rooms/${roomId}/candidates`), (snapshot) => {
+                const candidates = snapshot.val();
+                if (candidates) {
+                    Object.values(candidates).forEach(candidateData => {
+                        if (candidateData.candidate) {
+                            pc.addIceCandidate(new RTCIceCandidate({
+                                candidate: candidateData.candidate,
+                                sdpMid: candidateData.sdpMid,
+                                sdpMLineIndex: candidateData.sdpMLineIndex
+                            }));
+                        }
+                    });
+                }
+            });
+
+            // Create data channel if initiator
+            if (isInitiator) {
+                dataChannel = pc.createDataChannel('chat');
+                setupDataChannel();
+            }
+
+            return pc;
+        }
+
+        function setupDataChannel() {
+            if (!dataChannel) return;
+
+            dataChannel.onopen = () => {
+                console.log('Data channel opened');
+            };
+
+            dataChannel.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleVideoChatMessage(data);
+            };
         }
 
         function generateUniqueRoomId() {
@@ -6666,15 +6795,22 @@
                     video: true,
                     audio: true
                 });
-                
+
                 localVideo.srcObject = localStream;
-                
+
                 // Add local video to grid
                 const localVideoItem = document.querySelector('.video-item');
                 localVideoItem.style.display = 'block';
-                
+
+                // If we have a peer connection, add the stream to it
+                if (peerConnection) {
+                    localStream.getTracks().forEach(track => {
+                        peerConnection.addTrack(track, localStream);
+                    });
+                }
+
                 showNotification('Video conference dimulai!');
-                
+
             } catch (error) {
                 console.error('Error accessing media devices:', error);
                 showNotification('Tidak dapat mengakses kamera/mikrofon');
@@ -6779,49 +6915,60 @@
         }
         
         function addVideoStream(stream, peerId) {
+            // Remove existing remote video if any
+            const existingRemote = document.getElementById('remote-video-item');
+            if (existingRemote) {
+                existingRemote.remove();
+            }
+
             const videoItem = document.createElement('div');
             videoItem.className = 'video-item';
-            
+            videoItem.id = 'remote-video-item';
+
             const video = document.createElement('video');
             video.className = 'video-player';
             video.autoplay = true;
             video.playsInline = true;
             video.srcObject = stream;
-            
+
             const videoInfo = document.createElement('div');
             videoInfo.className = 'video-info';
-            videoInfo.textContent = `User ${peerId.substring(0, 8)}`;
-            
+            videoInfo.textContent = `Remote User`;
+
             videoItem.appendChild(video);
             videoItem.appendChild(videoInfo);
             videoGrid.appendChild(videoItem);
+
+            showNotification('Remote user terhubung!');
         }
         
         function sendVideoChatMessage() {
             const message = videoChatInput.value.trim();
             if (!message) return;
-            
+
             const messageData = {
                 type: 'chat',
                 sender: 'Anda',
                 message: message,
                 timestamp: new Date().toLocaleTimeString()
             };
-            
+
             // Display locally
             addVideoChatMessage(messageData);
-            
-            // Send to connections
-            connections.forEach(conn => {
-                if (conn.dataConnection) {
-                    conn.dataConnection.send(messageData);
-                }
-            });
-            
+
+            // Send via data channel
+            if (dataChannel && dataChannel.readyState === 'open') {
+                dataChannel.send(JSON.stringify(messageData));
+            }
+
             videoChatInput.value = '';
         }
-        
+
         function handleVideoChatMessage(data) {
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+
             if (data.type === 'chat') {
                 addVideoChatMessage(data);
             }
@@ -6846,13 +6993,26 @@
         function endCall() {
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
             }
-            
-            connections.forEach(conn => {
-                if (conn.close) conn.close();
-            });
-            
-            connections = [];
+
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+
+            if (dataChannel) {
+                dataChannel.close();
+                dataChannel = null;
+            }
+
+            // Clean up Firebase room data
+            if (roomId && window.firebaseDatabase) {
+                const database = window.firebaseDatabase;
+                const roomRef = window.firebaseRef(database, `rooms/${roomId}`);
+                window.firebaseRemove(roomRef);
+            }
+
             videoGrid.innerHTML = `
                 <div class="video-item">
                     <video id="local-video" autoplay muted class="video-player"></video>
@@ -6861,10 +7021,10 @@
                     </div>
                 </div>
             `;
-            
+
             videoChatMessages.innerHTML = '';
             localVideo.srcObject = null;
-            
+
             closeModal(videoConferenceModal);
             showNotification('Video conference diakhiri');
         }
